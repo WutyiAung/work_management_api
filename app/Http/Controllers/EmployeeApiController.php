@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\EmployeeRequest;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Imagick\Driver;
 
 class EmployeeApiController extends Controller
 {
@@ -18,9 +19,14 @@ class EmployeeApiController extends Controller
          $validatedData['password'] = Hash::make($validatedData['password']);
 
          if($request->hasFile('photo_path')){
-            $contractPath = $request->file('photo_path');
-            $contractPathName = uniqid().'_'.$contractPath->getClientOriginalName();
-            $contractPath->move(public_path().'/file',$contractPathName);
+            $manager = new ImageManager(new Driver());
+
+            $contractPathName = uniqid().'.'.$request->file('photo_path')->getClientOriginalExtension();
+            $contractPath = $manager->read($request->file('photo_path'));
+
+            // $contractPath->toJpeg(1000)->save(public_path('/file').$contractPathName);
+            $contractPath->toJpeg(200)->save(public_path('file') . '/' . $contractPathName);
+
 
             // Add the filename to the validated data
             $validatedData['photo_path'] = $contractPathName;

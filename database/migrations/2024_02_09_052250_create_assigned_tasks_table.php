@@ -20,8 +20,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->date('start_date');
             $table->date('end_date');
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->string('start_time');
+            $table->string('end_time');
             $table->string('meeting_link')->nullable();
             $table->string('location')->nullable();
             $table->enum('status',['pending','inProgress','done'])->default('pending');

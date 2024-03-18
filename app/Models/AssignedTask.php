@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AssignedTask extends Model
 {
@@ -15,7 +16,10 @@ class AssignedTask extends Model
     public function project(){
         return $this->belongsTo(Project::class);
     }
-    public function employee(){
-        return $this->belongsTo(Employee::class);
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+    public function design(){
+        return $this->belongsToMany(Design::class,'assigned_task_designs');
     }
 }

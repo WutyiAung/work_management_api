@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('brand')->nullable();
             $table->string('type_of_media')->nullable();
             $table->string('deadline')->nullable();
-            $table->string('content_writer')->nullable();
-            $table->string('designer')->nullable();
+            $table->foreignId('designer_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('content_writer_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('visual_copy')->nullable();
             $table->string('headline')->nullable();
             $table->string('body')->nullable();

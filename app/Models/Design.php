@@ -19,4 +19,7 @@ class Design extends Model
     {
         return $this->belongsToMany(ArtworkSize::class, 'design_artwork_sizes');
     }
+    public function assignedTask(){
+        return $this->belongsToMany(AssignedTask::class,'assigned_task_designs');
+    }
 }
