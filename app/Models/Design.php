@@ -10,8 +10,8 @@ class Design extends Model
 {
     use HasFactory;
     protected $guarded=[];
-    protected $appends = ['fileURL'];
-    public function getFileUrlAttribute()
+    protected $appends = ['imageURL'];
+    public function getImageUrlAttribute()
     {
         return asset('file/' . $this->reference_photo);
     }

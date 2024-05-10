@@ -22,4 +22,7 @@ class AssignedTask extends Model
     public function design(){
         return $this->belongsToMany(Design::class,'assigned_task_designs');
     }
+    public function shooting(){
+        return $this->belongsToMany(Shooting::class,'assigned_task_shootings');
+    }
 }

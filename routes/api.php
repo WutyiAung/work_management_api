@@ -79,11 +79,14 @@ Route::get('assigned-tasks',[AssignedTasksApiController::class,'assignedTasks'])
 Route::delete('assigned-tasks/delete/{id}',[AssignedTasksApiController::class,'assignedTasksDelete']);
 Route::post('assigned-tasks/update/{id}',[AssignedTasksApiController::class,'assignedTasksUpdate']);
 
+Route::get('assigned-tasks/{id}',[AssignedTasksApiController::class,'assignedTasksDetails']);
+
 //Report
 Route::post('report-create',[ReportApiController::class,'reportCreate']);
 Route::get  ('reports',[ReportApiController::class,'report']);
 Route::post('reports-update/{id}',[ReportApiController::class,'reportUpdate']);
 Route::delete('reports-delete/{id}',[ReportApiController::class,'reportDelete']);
+Route::get('reports/{id}',[ReportApiController::class,'index']);
 
 //TaskProjectType
 Route::post('task-types',[TaskProjectTypeApiController::class,'create']);
@@ -112,3 +115,7 @@ Route::post('shooting-accessories',[ShootingApiController::class,'createShooting
 Route::get('shooting-accessories',[ShootingApiController::class,'indexShootingAccessory']);
 Route::put('shooting-accessories/{id}',[ShootingApiController::class,'updateShootingAccessory']);
 Route::delete('shooting-accessories/{id}',[ShootingApiController::class,'deleteShootingAccessory']);
+
+Route::get('shooting-accessories/{id}',[ShootingApiController::class,'getShootingAccessory']);
+
+

@@ -18,6 +18,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $guarded = [];
+    protected $appends = ['imgURL'];
+    public function getImgURLAttribute()
+    {
+        return asset('file/' . $this->photo_path);
+    }
     public function company(){
         return $this->belongsTo(Company::class);
     }
@@ -27,6 +32,7 @@ class User extends Authenticatable
     public function position(){
         return $this->belongsTo(Position::class);
     }
+
 
     /**
      * The attributes that should be hidden for serialization.

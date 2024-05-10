@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Design;
+use App\Models\Shooting;
 use App\Models\ArtworkSize;
 use App\Models\AssignedTask;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Models\ShootingAccessoryCategory;
 use App\Http\Requests\AssignedTasksRequest;
+use App\Models\ShootingClassificationPivot;
 
 class AssignedTasksApiController extends Controller
 {
@@ -20,26 +24,26 @@ class AssignedTasksApiController extends Controller
             // Create AssignedTask
             $assignedTasks = AssignedTask::create($validatedData);
 
-            // Handle Designs
-            $designs = [];
+
             if ($request->filled('brand')) {
+                 // Handle Designs
+                 $designs = [];
+                // Handle reference photo
+                // Create Design
+                $designData = $request->only([
+                    'brand', 'type_of_media', 'deadline', 'content_writer_id', 'designer_id',
+                    'visual_copy', 'headline', 'body', 'objective', 'important_info',
+                    'taste_style', 'reference'
+                ]);
+
                 // Handle reference photo
                 $photoName = null; // Initialize photo name variable
                 if ($request->hasFile('reference_photo')) {
                     $photo = $request->file('reference_photo');
                     $photoName = uniqid() . '_' . $photo->getClientOriginalName();
                     $photo->move(public_path('file'), $photoName);
+                    $designData['reference_photo'] = $photoName;
                 }
-
-                // Create Design
-                $design = Design::create($request->only([
-                    'brand', 'type_of_media', 'deadline', 'content_writer_id', 'designer_id',
-                    'visual_copy', 'headline', 'body', 'objective', 'important_info',
-                    'taste_style', 'reference','reference_photo' => $photoName
-                ]));
-
-                // Add reference_photo to design data
-                $designData['reference_photo'] = $photoName;
 
                 $design = Design::create($designData);
                 // Attach design to assigned task
@@ -55,14 +59,82 @@ class AssignedTasksApiController extends Controller
                     // Attach artwork size to design
                     $design->artworkSizes()->attach($artworkSize->id);
                 }
-            }
+                // Return success response
+                return response()->json([
+                    "status" => "success",
+                    "assignedTasks" => $assignedTasks,
+                    "designs" => $designs,
+                    "artwork_size" => $artworkSize
+                ]);
+            }else if ($request->filled('shooting_location')) {
+                // Handle Designs
 
+                $shootings = [];
+
+                // Handle reference photo
+                // Create Design
+                $shootingData = $request->only([
+                    'shooting_location', 'type_detail', 'script_detail', 'scene_number', 'contact_name','contact_phone','duration','type','client','date','time','video_shooting_project','photo_shooting_project','arrive_office_on_time','transportation_charge','out_time','in_time','crew_list','project_details'
+                ]);
+
+                // Handle reference photo
+                $fileName = null; // Initialize photo name variable
+                if ($request->hasFile('document')) {
+                    $file = $request->file('document');
+                    $fileName = uniqid() . '_' . $file->getClientOriginalName();
+                    $file->move(public_path('file'), $fileName);
+                    $shootingData['document'] = $fileName;
+                }
+
+                $shooting = Shooting::create($shootingData);
+                // Attach shooting to assigned task
+                $assignedTasks->shooting()->attach($shooting->id);
+                $shootings[] = $shooting;
+
+                \Log::info($request->all());
+
+                // Handle Artwork Sizes
+                if ($request->filled('shooting_categories')) {
+                    $shootingCategories = json_decode($request->input('shooting_categories'), true);
+                    \Log::info('Decoded shooting categories: ' . print_r($shootingCategories, true));
+
+
+                    // Ensure shooting_categories is an array
+                    if (is_array($shootingCategories)) {
+                        foreach ($shootingCategories as $category) {
+                            // Create ShootingAccessoryCategory for each category
+                            $shootingCategory = ShootingAccessoryCategory::create([
+                                'category_id' => $category['category_id'],
+                                'subcategory_id' => $category['subcategory_id'],
+                                'qty' => $category['qty'],
+                            ]);
+
+                            // Attach the shooting category to the shooting
+                            $shooting->shootingAccessoryCategories()->attach($shootingCategory->id);
+                        }
+
+                        // Return success response after processing all categories
+                        return response()->json(['message' => 'Data stored successfully'], 200);
+                    } else {
+                        // Handle error if shooting_categories is not an array
+                        return response()->json(['error' => 'The shooting categories field must be an array.'], 400);
+                    }
+                }
+                // Return success response
+                return response()->json([
+                    "status" => "success",
+                    "assignedTasks" => $assignedTasks,
+                ]);
+            }
             // Return success response
             return response()->json([
                 "status" => "success",
                 "assignedTasks" => $assignedTasks,
-                "designs" => $designs,
-                "artwork_size" => $artworkSize
+            ]);
+             // Return success response
+             return response()->json([
+                "status" => "success",
+                "assignedTasks" => $assignedTasks,
             ]);
         } catch (\Exception $e) {
             // Handle any exceptions
@@ -73,7 +145,6 @@ class AssignedTasksApiController extends Controller
             ], 500);
         }
     }
-
     //GET
     public function assignedTasks(){
         $assignedTasks = AssignedTask::with('customer','project','user','design.artworkSizes')->get();
@@ -104,6 +175,14 @@ class AssignedTasksApiController extends Controller
         return response()->json([
             "status" => "success",
             "assignedTask" => $assignedTask
+        ]);
+    }
+
+    public function assignedTasksDetails($id){
+        $assignedTask = AssignedTask::where('id',$id)->with('shooting.shootingAccessoryCategories')->get();
+        return response()->json([
+            'status' => "success",
+            'assignedTask' => $assignedTask
         ]);
     }
 }

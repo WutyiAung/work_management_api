@@ -92,4 +92,11 @@ class ShootingApiController extends Controller
             "status" => 200,
         ]);
     }
+    public function getShootingAccessory($id){
+        $shootingAccessories = ShootingAccessory::where('shooting_category_id',$id)->with('shootingCategory')->get();
+        return response()->json([
+            "status" => 200,
+            "shootingAccessory" => $shootingAccessories
+        ]);
+    }
 }

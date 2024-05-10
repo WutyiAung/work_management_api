@@ -122,13 +122,19 @@ class ReportApiController extends Controller
             "report" => $report
         ]);
     }
-
     public function reportDelete($id){
         Report::findOrFail($id)->delete();
         $reports = Report::get();
         return response()->json([
             "status" => "success",
             "reports" => $reports
+        ]);
+    }
+    public function index($id){
+        $report = Report::where('assigned_task_id',$id)->first();
+        return response()->json([
+            "status" => 200,
+            "report" => $report
         ]);
     }
 }
