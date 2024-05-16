@@ -17,7 +17,7 @@ class CompanyApiController extends Controller
         ]);
     }
     public function company(){
-        $companies = Company::with('company')->get();
+        $companies = Company::get();
         return response()->json([
             'status' => 'success',
             'companies' => $companies
@@ -38,6 +38,13 @@ class CompanyApiController extends Controller
         return response()->json([
             "status" => "success",
             "companies" => $companies
+        ]);
+    }
+    public function companyDetail($id){
+        $company = Company::findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "company" => $company
         ]);
     }
 }

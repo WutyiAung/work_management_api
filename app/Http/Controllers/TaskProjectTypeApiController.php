@@ -71,4 +71,19 @@ class TaskProjectTypeApiController extends Controller
             "status" => 200,
         ]);
     }
+    public function taskTypeDetail($id){
+        $taskType = TaskType::findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "taskType" => $taskType
+        ]);
+    }
+    public function projectTypeDetail($id){
+        $projectType = ProjectType::findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "projectType" => $projectType
+        ]);
+    }
 }
+

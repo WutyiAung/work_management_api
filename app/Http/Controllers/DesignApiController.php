@@ -127,4 +127,11 @@ class DesignApiController extends Controller
             "artworkSize" => $artworkSize
         ]);
     }
+    public function designDetail($id){
+        $design = Design::with('artworkSizes')->findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "design" => $design
+        ]);
+    }
 }

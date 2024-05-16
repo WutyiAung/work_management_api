@@ -40,4 +40,11 @@ class PositionApiController extends Controller
             "positions" => $positions
         ]);
     }
+    public function positionDetail($id){
+        $position = Position::with('department')->findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "position" => $position
+        ]);
+    }
 }

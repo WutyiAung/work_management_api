@@ -38,10 +38,12 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::post('companies-update/{id}',[CompanyApiController::class,'companyUpdate']);
     Route::delete('companies-delete/{id}',[CompanyApiController::class,'companyDelete']);
     Route::get('companies',[CompanyApiController::class,'company']);
+    Route::get('companies/{id}',[CompanyApiController::class,'companyDetail']);
 
     //Position
     Route::post('position-create',[PositionApiController::class,'positionCreate']);
     Route::get('positions',[PositionApiController::class,'position']);
+    Route::get('positions/{id}',[PositionApiController::class,'positionDetail']);
     Route::post('positions-update/{id}',[PositionApiController::class,'positionUpdate']);
     Route::delete('positions-delete/{id}',[PositionApiController::class,'positionDelete']);
 
@@ -57,7 +59,6 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::get('departments/{id}',[DepartmentApiController::class,'departmentDetail']);
     Route::post('departments-update/{id}',[DepartmentApiController::class, 'departmentUpdate']);
     Route::delete('departments-delete/{id}',[DepartmentApiController::class, 'departmentDelete']);
-
 
     //Employee
     Route::post('employee-create',[EmployeeApiController::class, 'employeeCreate']);
@@ -92,36 +93,40 @@ Route::middleware(['auth:sanctum'])->group(function(){
     //TaskProjectType
     Route::post('task-types',[TaskProjectTypeApiController::class,'create']);
     Route::get('task-types',[TaskProjectTypeApiController::class,'index']);
+    Route::get('task-types/{id}',[TaskProjectTypeApiController::class,'taskTypeDetail']);
     Route::post('task-types/{id}',[TaskProjectTypeApiController::class,'update']);
     Route::delete('task-types/{id}',[TaskProjectTypeApiController::class,'delete']);
 
     //ProjectTypes
     Route::post('project-types',[TaskProjectTypeApiController::class,'createProjectType']);
     Route::get('project-types',[TaskProjectTypeApiController::class,'indexProjectType']);
+    Route::get('project-types/{id}',[TaskProjectTypeApiController::class,'projectTypeDetail']);
     Route::post('project-types/{id}',[TaskProjectTypeApiController::class,'updateProjectType']);
     Route::delete('project-types/{id}',[TaskProjectTypeApiController::class,'deleteProjectType']);
 
     //Design
     Route::post('designs',[DesignApiController::class,'create']);
     Route::get('designs',[DesignApiController::class,'index']);
+    Route::get('designs/{id}',[DesignApiController::class,'designDetail']);
     Route::post('designs/{id}',[DesignApiController::class,'update']);
     Route::delete('designs/{id}',[DesignApiController::class,'delete']);
 
     //ShootingCategory
     Route::post('shooting-categories',[ShootingApiController::class,'create']);
     Route::get('shooting-categories',[ShootingApiController::class,'index']);
+    Route::get('shooting-categories/{id}',[ShootingApiController::class,'shootingCategoryDetail']);
     Route::put('shooting-categories/{id}',[ShootingApiController::class,'update']);
     Route::delete('shooting-categories/{id}/soft-delete',[ShootingApiController::class,'softDeleteCategoryItems']);
 
     //ShootingAccessory
     Route::post('shooting-accessories',[ShootingApiController::class,'createShootingAccessory']);
     Route::get('shooting-accessories',[ShootingApiController::class,'indexShootingAccessory']);
+    Route::get('shooting-accessories/{id}',[ShootingApiController::class,'shootingAccessoryDetail']);
     Route::put('shooting-accessories/{id}',[ShootingApiController::class,'updateShootingAccessory']);
     Route::delete('shooting-accessories/{id}',[ShootingApiController::class,'deleteShootingAccessory']);
     Route::get('shooting-accessories/{id}',[ShootingApiController::class,'getShootingAccessory']);
 
 });
-// Route::post('admin/login',[CustomerApiController::class,'loginProcess']);
 //CSRF
 // Route::post('clearCSRFToken', 'CSRFTokenController@clearCSRFToken');
 
