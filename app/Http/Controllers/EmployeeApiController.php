@@ -109,7 +109,7 @@ class EmployeeApiController extends Controller
         ]);
     }
     public function employeeDetail($id){
-        $employee = Employee::findOrFail($id);
+        $employee = User::with('company','department','position')->findOrFail($id);
         return response()->json([
             "status" => 200,
             "employee" => $employee

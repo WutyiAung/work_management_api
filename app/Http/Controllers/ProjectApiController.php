@@ -90,7 +90,7 @@ class ProjectApiController extends Controller
         ]);
     }
     public function projectDetail($id){
-        $project = Project::findOrFail($id);
+        $project = Project::with('customer','employee')->findOrFail($id);
         return response()->json([
             "status" => 200,
             "project" => $project

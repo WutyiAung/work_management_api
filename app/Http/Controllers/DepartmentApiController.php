@@ -41,7 +41,7 @@ class DepartmentApiController extends Controller
         ]);
     }
     public function departmentDetail($id){
-        $department = Department::findOrFail($id);
+        $department = Department::with('company')->findOrFail($id);
         return response()->json([
             "status" => 200,
             "department" => $department
