@@ -28,11 +28,9 @@ class CustomerApiController extends Controller
         ]);
     }
     public function customerUpdate(CustomerRequest $request, $id){
-        $validatedData = $request->validated(); // Retrieve validated data
-
+        $validatedData = $request->validated();
         $customer = Customer::findOrFail($id);
-        $customer->update($validatedData); // Use the validated data to update
-
+        $customer->update($validatedData);
         return response()->json([
             'status' => 'success',
             'data' => $customer
@@ -48,39 +46,59 @@ class CustomerApiController extends Controller
         ]);
     }
 
-
-
-
     protected function loginProcess(Request $request){
-
         $validator = Validator::make($request->all(), [
-            'email' => 'required',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
         if ($validator->fails()) {
-
-
-            return redirect()->back()->withErrors($validator)->withInput();
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors(),
+            ], 422);
         }
 
         $user = User::where('email', $request->email)->first();
 
-        if (!isset($user)) {
-
-            return redirect()->back();
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid credentials.',
+            ], 401);
         }
-        elseif (!Hash::check($request->password, $user->password)) {
 
-            return redirect()->back();
-        }
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            "status" => "success",
-            "user" => $user
+            'status' => 'success',
+            'user' => $user,
+            'token' => $token,
         ]);
-
     }
-
+     // user login and release token
+    //  public function loginProcess(Request $request){
+    //     // email password
+    //     $user = User::where('email',$request->email)->first();
+    //     if(isset($user)){
+    //         if(Hash::check($request->password,$user->password)){
+    //           return response()->json([
+    //             'user' => $user ,
+    //             'token' => $user->createToken(time())->plainTextToken
+    //           ]);
+    //         }else{
+    //             return response()->json([
+    //                 'user' => null ,
+    //                 'token' => null
+    //               ]);
+    //         }
+    //     }else{
+    //         return response()->json([
+    //             'user' => null ,
+    //             'token' => null
+    //           ]);
+    //     }
+    // }
 }
 
 
