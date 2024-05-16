@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\EmployeeRequest;
+use App\Models\Employee;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Imagick\Driver;
 
@@ -104,6 +105,13 @@ class EmployeeApiController extends Controller
         // Return a success response
         return response()->json([
             "status" => "success",
+            "employee" => $employee
+        ]);
+    }
+    public function employeeDetail($id){
+        $employee = Employee::findOrFail($id);
+        return response()->json([
+            "status" => 200,
             "employee" => $employee
         ]);
     }

@@ -89,4 +89,11 @@ class ProjectApiController extends Controller
             "project" => $project
         ]);
     }
+    public function projectDetail($id){
+        $project = Project::findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "project" => $project
+        ]);
+    }
 }

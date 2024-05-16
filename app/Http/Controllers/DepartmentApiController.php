@@ -40,4 +40,11 @@ class DepartmentApiController extends Controller
             "department" => $department
         ]);
     }
+    public function departmentDetail($id){
+        $department = Department::findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "department" => $department
+        ]);
+    }
 }

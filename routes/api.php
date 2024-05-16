@@ -54,18 +54,22 @@ Route::middleware(['auth:sanctum'])->group(function(){
     //Departments
     Route::post('department-create',[DepartmentApiController::class, 'departmentCreate']);
     Route::get('departments',[DepartmentApiController::class, 'department']);
+    Route::get('departments/{id}',[DepartmentApiController::class,'departmentDetail']);
     Route::post('departments-update/{id}',[DepartmentApiController::class, 'departmentUpdate']);
     Route::delete('departments-delete/{id}',[DepartmentApiController::class, 'departmentDelete']);
+
 
     //Employee
     Route::post('employee-create',[EmployeeApiController::class, 'employeeCreate']);
     Route::get('employees',[EmployeeApiController::class, 'employee']);
+    Route::get('employees/{id}',[EmployeeApiController::class,'employeeDetail']);
     Route::post('employees-update/{id}',[EmployeeApiController::class, 'employeeUpdate']);
     Route::delete('employees-delete/{id}',[EmployeeApiController::class, 'employeeDelete']);
 
     //Project
     Route::post('project-create',[ProjectApiController::class,'projectCreate']);
     Route::get('projects',[ProjectApiController::class,'project']);
+    Route::get('projects/{id}',[ProjectApiController::class,'projectDetail']);
     Route::delete('projects-delete/{id}',[ProjectApiController::class,'projectDelete']);
     Route::post('projects-update/{id}',[ProjectApiController::class,'projectUpdate']);
     //Supervisor
