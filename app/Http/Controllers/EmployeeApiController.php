@@ -19,18 +19,29 @@ class EmployeeApiController extends Controller
          // Hash the password
          $validatedData['password'] = Hash::make($validatedData['password']);
 
-         if($request->hasFile('photo_path')){
-            $manager = new ImageManager(new Driver());
+        //  if($request->hasFile('photo_path')){
+        //     $manager = new ImageManager(new Driver());
 
-            $contractPathName = uniqid().'.'.$request->file('photo_path')->getClientOriginalExtension();
-            $contractPath = $manager->read($request->file('photo_path'));
+        //     $contractPathName = uniqid().'.'.$request->file('photo_path')->getClientOriginalExtension();
+        //     $contractPath = $manager->read($request->file('photo_path'));
 
-            // $contractPath->toJpeg(1000)->save(public_path('/file').$contractPathName);
-            $contractPath->toJpeg(200)->save(public_path('file') . '/' . $contractPathName);
+        //     // $contractPath->toJpeg(1000)->save(public_path('/file').$contractPathName);
+        //     $contractPath->toJpeg(200)->save(public_path('file') . '/' . $contractPathName);
 
 
-            // Add the filename to the validated data
-            $validatedData['photo_path'] = $contractPathName;
+        //     // Add the filename to the validated data
+        //     $validatedData['photo_path'] = $contractPathName;
+        // }
+        if($request->hasFile('photo_path')){
+            $mainPhoto = $request->file('photo_path');
+            $mainPhotoName = uniqid().'_'.$mainPhoto->getClientOriginalName();
+            $mainPhoto->move(public_path().'/file',$mainPhotoName);
+
+             // Add the filename to the validated data
+             $validatedData['photo_path'] = $mainPhotoName;
+        } else {
+            // Handle case where no file is uploaded
+            return response()->json(['error' => 'No file uploaded'], 400);
         }
         // Create the employee record
         $employee = User::create($validatedData);
