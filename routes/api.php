@@ -128,6 +128,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::post('shooting-accessories/{id}',[ShootingApiController::class,'updateShootingAccessoryDetail']);
     Route::delete('shooting-accessories/{id}',[ShootingApiController::class,'deleteShootingAccessory']);
     Route::get('shooting-accessories/{id}',[ShootingApiController::class,'getShootingAccessory']);
+    Route::get('shooting-accessory/{id}',[ShootingApiController::class,'getShootingAccessoryDetail']);
 });
 
 

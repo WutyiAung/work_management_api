@@ -119,4 +119,11 @@ class ShootingApiController extends Controller
             "shootingAccessory" => $shootingAccessory
         ]);
     }
+    public function getShootingAccessoryDetail($id){
+        $shootingAccessory = ShootingAccessory::findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "shootingAccessory" => $shootingAccessory
+        ]);
+    }
 }
