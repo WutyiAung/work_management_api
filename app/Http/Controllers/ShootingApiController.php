@@ -18,12 +18,18 @@ class ShootingApiController extends Controller
             "shootingCategory" => $shootingCategory
         ]);
     }
-    public function index(){
-       $shootingCategories = ShootingCategory::get();
-       return response()->json([
-        "status" => 200,
-        "shootingCategories" => $shootingCategories
-       ]);
+    public function index(Request $request)
+    {
+        $state = $request->query('state');
+        $query = ShootingCategory::query();
+        if ($state === 'soft_deleted') {
+            $query->where('status', 'soft_deleted');
+        }
+        $shootingCategories = $query->get();
+        return response()->json([
+            'status' => 200,
+            'shootingCategories' => $shootingCategories,
+        ]);
     }
     public function update(Request $request, $id)
     {
@@ -124,6 +130,28 @@ class ShootingApiController extends Controller
         return response()->json([
             "status" => 200,
             "shootingAccessory" => $shootingAccessory
+        ]);
+    }
+    public function softDeleteCategoriesWithQuery(Request $request)
+    {
+        // Get the 'state' query parameter from the request
+        $state = $request->query('state');
+
+        // Filter the categories where status is 'soft_deleted' if the state is 'soft_deleted'
+        if ($state === 'soft_deleted') {
+            $softDeletedCategories = ShootingCategory::where('status', 'soft_deleted')->get();
+
+            // Return the filtered categories as a JSON response
+            return response()->json([
+                'status' => 200,
+                'softDeletedCategories' => $softDeletedCategories,
+            ]);
+        }
+
+        // If the state is not 'soft_deleted', return an empty array or appropriate response
+        return response()->json([
+            'status' => 400,
+            'message' => 'Invalid state parameter',
         ]);
     }
 }
