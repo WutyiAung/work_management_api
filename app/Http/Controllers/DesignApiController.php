@@ -11,20 +11,17 @@ class DesignApiController extends Controller
 {
     public function create(DesignRequest $request)
     {
-        // Validate the request
         $validatedData = $request->validated();
         if($request->hasFile('reference_photo')){
             $photo = $request->file('reference_photo');
             $photoName = uniqid().'_'.$photo->getClientOriginalName();
             $photo->move(public_path().'/file',$photoName);
 
-            // Add the filename to the validated data
             $validatedData['reference_photo'] = $photoName;
         }
         // Create the design
         $design = Design::create($validatedData);
 
-        // Create artwork sizes and associate them with the design
         $artworkSizes = [];
         if ($request->filled('visual_format') && $request->filled('aspect_ratio') && $request->filled('width') && $request->filled('height') && $request->filled('resolution')) {
             $artworkSizeData = [
@@ -37,10 +34,8 @@ class DesignApiController extends Controller
 
             // Create artwork size
             $artworkSize = ArtworkSize::create($artworkSizeData);
-
             // Associate artwork size with the design
             $design->artworkSizes()->attach($artworkSize->id);
-
             // Add artwork size to the list
             $artworkSizes[] = $artworkSize;
         }
@@ -56,7 +51,6 @@ class DesignApiController extends Controller
     {
         // Retrieve all designs along with their associated artwork sizes
         $designs = Design::with('artworkSizes')->get();
-
         return response()->json([
             "status" => 200,
             "designs" => $designs

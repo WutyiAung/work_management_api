@@ -116,20 +116,19 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::post('shooting-categories',[ShootingApiController::class,'create']);
     Route::get('shooting-categories',[ShootingApiController::class,'index']);
     Route::get('shooting-categories/{id}',[ShootingApiController::class,'shootingCategoryDetail']);
-    Route::put('shooting-categories/{id}',[ShootingApiController::class,'update']);
+    // Route::put('shooting-categories/{id}',[ShootingApiController::class,'update']);
+    Route::post('shooting-categories/{id}',[ShootingApiController::class,'updateDetail']);
     Route::delete('shooting-categories/{id}/soft-delete',[ShootingApiController::class,'softDeleteCategoryItems']);
 
     //ShootingAccessory
     Route::post('shooting-accessories',[ShootingApiController::class,'createShootingAccessory']);
     Route::get('shooting-accessories',[ShootingApiController::class,'indexShootingAccessory']);
     Route::get('shooting-accessories/{id}',[ShootingApiController::class,'shootingAccessoryDetail']);
-    Route::put('shooting-accessories/{id}',[ShootingApiController::class,'updateShootingAccessory']);
+    // Route::put('shooting-accessories/{id}',[ShootingApiController::class,'updateShootingAccessory']);
+    Route::post('shooting-accessories/{id}',[ShootingApiController::class,'updateShootingAccessoryDetail']);
     Route::delete('shooting-accessories/{id}',[ShootingApiController::class,'deleteShootingAccessory']);
     Route::get('shooting-accessories/{id}',[ShootingApiController::class,'getShootingAccessory']);
-
 });
-//CSRF
-// Route::post('clearCSRFToken', 'CSRFTokenController@clearCSRFToken');
 
 
 

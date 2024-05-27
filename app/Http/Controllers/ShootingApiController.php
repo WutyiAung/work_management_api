@@ -27,15 +27,10 @@ class ShootingApiController extends Controller
     }
     public function update(Request $request, $id)
     {
-        // Find the ShootingCategory instance to update
         $shootingCategory = ShootingCategory::findOrFail($id);
-
-        // Update the attributes with the new values
         $shootingCategory->update([
             "name" => $request->input('name')
         ]);
-
-        // Return a JSON response with the updated ShootingCategory
         return response()->json([
             "status" => 200,
             "shootingCategory" => $shootingCategory
@@ -43,22 +38,16 @@ class ShootingApiController extends Controller
     }
     public function softDeleteCategoryItems($id)
     {
-        // Find all category items with the given category_id
         $subCategories = ShootingCategory::where('id', $id)->get();
-
-        // Update the status of each category item to "soft deleted"
         foreach ($subCategories as $item) {
-            $item->status = 'soft_deleted'; // Update the status as per your requirement
+            $item->status = 'soft_deleted';
             $item->save();
         }
-
-        // Return a response indicating success
         return response()->json([
             "status" => 200,
             "message" => "Category items soft deleted successfully"
         ]);
     }
-
     //Shooting Accessories
     public function createShootingAccessory(ShootingRequest $request){
         $validatedData = $request->validated();
@@ -68,7 +57,6 @@ class ShootingApiController extends Controller
             "shootingAccessory" => $shootingAccessory
         ]);
     }
-
     public function indexShootingAccessory(){
         $shootingAccessories = ShootingAccessory::with('shootingCategory')->get();
         return response()->json([
@@ -76,7 +64,6 @@ class ShootingApiController extends Controller
             "shootingAccessories" => $shootingAccessories
         ]);
     }
-
     public function updateShootingAccessory(ShootingRequest $request,$id){
         $shootingAccessory = ShootingAccessory::findOrFail($id);
         $validatedData = $request->validated();
@@ -110,6 +97,25 @@ class ShootingApiController extends Controller
         $shootingAccessory = ShootingAccessory::with('shootingCategory')->findOrFail($id);
         return response()->json([
             "status" => "200",
+            "shootingAccessory" => $shootingAccessory
+        ]);
+    }
+    public function updateDetail(Request $request,$id){
+        $shootingCategory = ShootingCategory::findOrFail($id);
+        $shootingCategory->name = $request->name;
+        $shootingCategory->save();
+        return response()->json([
+            "status" => 200,
+            "shootingCategory" => $shootingCategory
+        ]);
+    }
+    public function updateShootingAccessoryDetail(Request $request,$id){
+        $shootingAccessory = ShootingAccessory::findOrFail($id);
+        $shootingAccessory->name = $request->name;
+        $shootingAccessory->shooting_category_id = $request->shooting_category_id;
+        $shootingAccessory->save();
+        return response()->json([
+            "status" => 200,
             "shootingAccessory" => $shootingAccessory
         ]);
     }
