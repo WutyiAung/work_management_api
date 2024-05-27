@@ -14,21 +14,14 @@ use Intervention\Image\Drivers\Imagick\Driver;
 class EmployeeApiController extends Controller
 {
     public function employeeCreate(EmployeeRequest $request){
-         // Validate the request data
          $validatedData = $request->validated();
-         // Hash the password
          $validatedData['password'] = Hash::make($validatedData['password']);
-
         //  if($request->hasFile('photo_path')){
         //     $manager = new ImageManager(new Driver());
-
         //     $contractPathName = uniqid().'.'.$request->file('photo_path')->getClientOriginalExtension();
         //     $contractPath = $manager->read($request->file('photo_path'));
-
         //     // $contractPath->toJpeg(1000)->save(public_path('/file').$contractPathName);
         //     $contractPath->toJpeg(200)->save(public_path('file') . '/' . $contractPathName);
-
-
         //     // Add the filename to the validated data
         //     $validatedData['photo_path'] = $contractPathName;
         // }
@@ -36,7 +29,6 @@ class EmployeeApiController extends Controller
             $mainPhoto = $request->file('photo_path');
             $mainPhotoName = uniqid().'_'.$mainPhoto->getClientOriginalName();
             $mainPhoto->move(public_path().'/file',$mainPhotoName);
-
              // Add the filename to the validated data
              $validatedData['photo_path'] = $mainPhotoName;
         } else {
@@ -109,11 +101,7 @@ class EmployeeApiController extends Controller
             // Retain the existing file path if no new file is uploaded
             $validatedData['photo_path'] = $employee->photo_path;
         }
-
-        // Update the employee record with the validated data
         $employee->update($validatedData);
-
-        // Return a success response
         return response()->json([
             "status" => "success",
             "employee" => $employee
@@ -126,5 +114,4 @@ class EmployeeApiController extends Controller
             "employee" => $employee
         ]);
     }
-
 }

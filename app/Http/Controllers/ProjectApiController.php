@@ -18,7 +18,6 @@ class ProjectApiController extends Controller
             $contractPath = $request->file('document');
             $contractPathName = uniqid().'_'.$contractPath->getClientOriginalName();
             $contractPath->move(public_path().'/file',$contractPathName);
-
             // Add the filename to the validated data
             $validatedData['document'] = $contractPathName;
         }
@@ -36,7 +35,6 @@ class ProjectApiController extends Controller
             "projects" => $projects
         ]);
     }
-
     //supervisor
     public function getSupervisor($id){
         $projects = Project::where('user_id',$id)->with('customer','employee')->get();
@@ -45,8 +43,6 @@ class ProjectApiController extends Controller
             "projects" => $projects
         ]);
     }
-
-
     //Delete
     public function projectDelete($id){
         $project = Project::findOrFail($id);
@@ -69,14 +65,12 @@ class ProjectApiController extends Controller
             $contractPath = $request->file('document');
             $contractPathName = uniqid().'_'.$contractPath->getClientOriginalName();
             $contractPath->move(public_path().'/file',$contractPathName);
-
             // Delete the old file if it exists
             if($project->document){
                 // You may need to import the File facade at the top of your file:
                 // use Illuminate\Support\Facades\File;
                 File::delete(public_path().'/file/'.$project->document);
             }
-
             // Update the attachment path in the database
             $validatedData['document'] = $contractPathName;
         } else {

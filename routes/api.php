@@ -52,6 +52,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::get('customers',[CustomerApiController::class,'customer']);
     Route::post('customers-update/{id}',[CustomerApiController::class,'customerUpdate']);
     Route::delete('customers-delete/{id}',[CustomerApiController::class,'customerDelete']);
+    Route::get('customers/{id}',[CustomerApiController::class,'customerDetails']);
 
     //Departments
     Route::post('department-create',[DepartmentApiController::class, 'departmentCreate']);

@@ -76,29 +76,13 @@ class CustomerApiController extends Controller
             'token' => $token,
         ]);
     }
-     // user login and release token
-    //  public function loginProcess(Request $request){
-    //     // email password
-    //     $user = User::where('email',$request->email)->first();
-    //     if(isset($user)){
-    //         if(Hash::check($request->password,$user->password)){
-    //           return response()->json([
-    //             'user' => $user ,
-    //             'token' => $user->createToken(time())->plainTextToken
-    //           ]);
-    //         }else{
-    //             return response()->json([
-    //                 'user' => null ,
-    //                 'token' => null
-    //               ]);
-    //         }
-    //     }else{
-    //         return response()->json([
-    //             'user' => null ,
-    //             'token' => null
-    //           ]);
-    //     }
-    // }
+    public function customerDetails($id){
+        $customer = Customer::findOrFail($id);
+        return response()->json([
+            "status" => 200,
+            "customer" => $customer
+        ]);
+    }
 }
 
 

@@ -20,11 +20,8 @@ class AssignedTasksApiController extends Controller
             $validatedData = $request->validated();
             // Set default status to 'pending' if not provided
             $validatedData['status'] = $validatedData['status'] ?? 'pending';
-
             // Create AssignedTask
             $assignedTasks = AssignedTask::create($validatedData);
-
-
             if ($request->filled('brand')) {
                  // Handle Designs
                  $designs = [];
@@ -35,7 +32,6 @@ class AssignedTasksApiController extends Controller
                     'visual_copy', 'headline', 'body', 'objective', 'important_info',
                     'taste_style', 'reference'
                 ]);
-
                 // Handle reference photo
                 $photoName = null; // Initialize photo name variable
                 if ($request->hasFile('reference_photo')) {
@@ -44,12 +40,10 @@ class AssignedTasksApiController extends Controller
                     $photo->move(public_path('file'), $photoName);
                     $designData['reference_photo'] = $photoName;
                 }
-
                 $design = Design::create($designData);
                 // Attach design to assigned task
                 $assignedTasks->design()->attach($design->id);
                 $designs[] = $design;
-
                 // Handle Artwork Sizes
                 if ($request->filled('visual_format') && $request->filled('aspect_ratio') &&
                     $request->filled('width') && $request->filled('height') && $request->filled('resolution')) {
@@ -68,15 +62,12 @@ class AssignedTasksApiController extends Controller
                 ]);
             }else if ($request->filled('shooting_location')) {
                 // Handle Designs
-
                 $shootings = [];
-
                 // Handle reference photo
                 // Create Design
                 $shootingData = $request->only([
                     'shooting_location', 'type_detail', 'script_detail', 'scene_number', 'contact_name','contact_phone','duration','type','client','date','time','video_shooting_project','photo_shooting_project','arrive_office_on_time','transportation_charge','out_time','in_time','crew_list','project_details'
                 ]);
-
                 // Handle reference photo
                 $fileName = null; // Initialize photo name variable
                 if ($request->hasFile('document')) {
@@ -90,15 +81,11 @@ class AssignedTasksApiController extends Controller
                 // Attach shooting to assigned task
                 $assignedTasks->shooting()->attach($shooting->id);
                 $shootings[] = $shooting;
-
-                \Log::info($request->all());
-
+                Log::info($request->all());
                 // Handle Artwork Sizes
                 if ($request->filled('shooting_categories')) {
                     $shootingCategories = json_decode($request->input('shooting_categories'), true);
-                    \Log::info('Decoded shooting categories: ' . print_r($shootingCategories, true));
-
-
+                    Log::info('Decoded shooting categories: ' . print_r($shootingCategories, true));
                     // Ensure shooting_categories is an array
                     if (is_array($shootingCategories)) {
                         foreach ($shootingCategories as $category) {
@@ -108,11 +95,9 @@ class AssignedTasksApiController extends Controller
                                 'subcategory_id' => $category['subcategory_id'],
                                 'qty' => $category['qty'],
                             ]);
-
                             // Attach the shooting category to the shooting
                             $shooting->shootingAccessoryCategories()->attach($shootingCategory->id);
                         }
-
                         // Return success response after processing all categories
                         return response()->json(['message' => 'Data stored successfully'], 200);
                     } else {
