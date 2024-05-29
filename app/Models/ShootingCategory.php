@@ -9,4 +9,8 @@ class ShootingCategory extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $with = ['shootingAccessory'];
+    public function shootingAccessory(){
+        return $this->hasMany(ShootingAccessory::class);
+    }
 }

@@ -14,7 +14,8 @@ use App\Models\ShootingClassificationPivot;
 
 class AssignedTasksApiController extends Controller
 {
-    public function assignedTasksCreate(AssignedTasksRequest $request) {
+    public function assignedTasksCreate(AssignedTasksRequest $request)
+    {
         try {
             // Validate incoming request data
             $validatedData = $request->validated();
@@ -23,8 +24,8 @@ class AssignedTasksApiController extends Controller
             // Create AssignedTask
             $assignedTasks = AssignedTask::create($validatedData);
             if ($request->filled('brand')) {
-                 // Handle Designs
-                 $designs = [];
+                // Handle Designs
+                $designs = [];
                 // Handle reference photo
                 // Create Design
                 $designData = $request->only([
@@ -45,8 +46,10 @@ class AssignedTasksApiController extends Controller
                 $assignedTasks->design()->attach($design->id);
                 $designs[] = $design;
                 // Handle Artwork Sizes
-                if ($request->filled('visual_format') && $request->filled('aspect_ratio') &&
-                    $request->filled('width') && $request->filled('height') && $request->filled('resolution')) {
+                if (
+                    $request->filled('visual_format') && $request->filled('aspect_ratio') &&
+                    $request->filled('width') && $request->filled('height') && $request->filled('resolution')
+                ) {
                     $artworkSize = ArtworkSize::create($request->only([
                         'visual_format', 'aspect_ratio', 'width', 'height', 'resolution'
                     ]));
@@ -60,13 +63,13 @@ class AssignedTasksApiController extends Controller
                     "designs" => $designs,
                     "artwork_size" => $artworkSize
                 ]);
-            }else if ($request->filled('shooting_location')) {
+            } else if ($request->filled('shooting_location')) {
                 // Handle Designs
                 $shootings = [];
                 // Handle reference photo
                 // Create Design
                 $shootingData = $request->only([
-                    'shooting_location', 'type_detail', 'script_detail', 'scene_number', 'contact_name','contact_phone','duration','type','client','date','time','video_shooting_project','photo_shooting_project','arrive_office_on_time','transportation_charge','out_time','in_time','crew_list','project_details'
+                    'shooting_location', 'type_detail', 'script_detail', 'scene_number', 'contact_name', 'contact_phone', 'duration', 'type', 'client', 'date', 'time', 'video_shooting_project', 'photo_shooting_project', 'arrive_office_on_time', 'transportation_charge', 'out_time', 'in_time', 'crew_list', 'project_details'
                 ]);
                 // Handle reference photo
                 $fileName = null; // Initialize photo name variable
@@ -116,8 +119,8 @@ class AssignedTasksApiController extends Controller
                 "status" => "success",
                 "assignedTasks" => $assignedTasks,
             ]);
-             // Return success response
-             return response()->json([
+            // Return success response
+            return response()->json([
                 "status" => "success",
                 "assignedTasks" => $assignedTasks,
             ]);
@@ -131,15 +134,17 @@ class AssignedTasksApiController extends Controller
         }
     }
     //GET
-    public function assignedTasks(){
-        $assignedTasks = AssignedTask::with('customer','project','user','design.artworkSizes')->get();
+    public function assignedTasks()
+    {
+        $assignedTasks = AssignedTask::with('customer', 'project', 'user', 'design.artworkSizes')->get();
         return response()->json([
             "status" => "success",
             "assignedTasks" => $assignedTasks
         ]);
     }
     //DELETE
-    public function assignedTasksDelete($id){
+    public function assignedTasksDelete($id)
+    {
         AssignedTask::findOrFail($id)->delete();
         $assignedTasks = AssignedTask::get();
         return response()->json([
@@ -162,9 +167,30 @@ class AssignedTasksApiController extends Controller
             "assignedTask" => $assignedTask
         ]);
     }
-
-    public function assignedTasksDetails($id){
-        $assignedTask = AssignedTask::where('id',$id)->with('shooting.shootingAccessoryCategories')->get();
+    // public function assignedTasksDetails($id){
+    //     $assignedTask = AssignedTask::where('id',$id)->with('customer','project','user','design.artworkSizes','shooting.shootingAccessoryCategories')->get();
+    //     return response()->json([
+    //         'status' => "success",
+    //         'assignedTask' => $assignedTask
+    //     ]);
+    // }
+    public function assignedTasksDetails($id)
+    {
+        // Fetch the assigned task with related data
+        $assignedTask = AssignedTask::where('id', $id)
+            ->with(['customer', 'project', 'user', 'design.artworkSizes', 'shooting.shootingAccessoryCategories'])
+            ->get()
+            ->map(function ($task) {
+                // Check if the design data is empty and remove the key if it is
+                if ($task->design->isEmpty()) {
+                    unset($task->design);
+                }
+                // Check if the shooting data is empty and remove the key if it is
+                if ($task->shooting->isEmpty()) {
+                    unset($task->shooting);
+                }
+                return $task;
+            });
         return response()->json([
             'status' => "success",
             'assignedTask' => $assignedTask
