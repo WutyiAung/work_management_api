@@ -6,11 +6,9 @@ use App\Models\Design;
 use App\Models\Shooting;
 use App\Models\ArtworkSize;
 use App\Models\AssignedTask;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\ShootingAccessoryCategory;
 use App\Http\Requests\AssignedTasksRequest;
-use App\Models\ShootingClassificationPivot;
 
 class AssignedTasksApiController extends Controller
 {
@@ -86,17 +84,18 @@ class AssignedTasksApiController extends Controller
                 $shootings[] = $shooting;
                 Log::info($request->all());
                 // Handle Artwork Sizes
-                if ($request->filled('shooting_categories')) {
-                    $shootingCategories = json_decode($request->input('shooting_categories'), true);
+                if ($request->filled('shooting_accessories')) {
+                    $shootingCategories = json_decode($request->input('shooting_accessories'), true);
                     Log::info('Decoded shooting categories: ' . print_r($shootingCategories, true));
                     // Ensure shooting_categories is an array
                     if (is_array($shootingCategories)) {
                         foreach ($shootingCategories as $category) {
                             // Create ShootingAccessoryCategory for each category
                             $shootingCategory = ShootingAccessoryCategory::create([
-                                'category_id' => $category['category_id'],
-                                'subcategory_id' => $category['subcategory_id'],
-                                'qty' => $category['qty'],
+                                'accessory_name' => $category['accessory_name'],
+                                'required_qty' => $category['required_qty'],
+                                'taken_qty' => $category['required_qty'],
+                                'returned_qty' => $category['returned_qty']
                             ]);
                             // Attach the shooting category to the shooting
                             $shooting->shootingAccessoryCategories()->attach($shootingCategory->id);
@@ -105,7 +104,7 @@ class AssignedTasksApiController extends Controller
                         return response()->json(['message' => 'Data stored successfully'], 200);
                     } else {
                         // Handle error if shooting_categories is not an array
-                        return response()->json(['error' => 'The shooting categories field must be an array.'], 400);
+                        return response()->json(['error' => 'The shooting accessories field must be an array.'], 400);
                     }
                 }
                 // Return success response
@@ -185,15 +184,38 @@ class AssignedTasksApiController extends Controller
                 if ($task->design->isEmpty()) {
                     unset($task->design);
                 }
+
                 // Check if the shooting data is empty and remove the key if it is
                 if ($task->shooting->isEmpty()) {
                     unset($task->shooting);
+                } else {
+                    // Rename shooting_accessory_categories to shooting_accessories
+                    $task->shooting = $task->shooting->map(function ($shooting) {
+                        $shooting->shooting_accessories = $shooting->shootingAccessoryCategories;
+                        unset($shooting->shootingAccessoryCategories);
+
+                        // Convert crew_list string to an actual array
+                        if (isset($shooting->crew_list)) {
+                            $crewListString = $shooting->crew_list;
+                            $crewListString = trim($crewListString, "[]");
+                            $crewListArray = array_map('trim', explode(',', $crewListString));
+                            $crewListArray = array_map(function($item) {
+                                return trim($item, "'");
+                            }, $crewListArray);
+                            $shooting->crew_list = $crewListArray;
+                        }
+
+                        return $shooting;
+                    });
                 }
+
                 return $task;
             });
+
         return response()->json([
             'status' => "success",
             'assignedTask' => $assignedTask
         ]);
     }
+
 }
