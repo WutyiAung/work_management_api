@@ -22,8 +22,8 @@ class ShootingApiController extends Controller
     {
         $state = $request->query('state');
         $query = ShootingCategory::query();
-        if ($state === 'soft_deleted') {
-            $query->where('status', 'soft_deleted');
+        if ($state === 'visible') {
+            $query->where('status', null);
         }
         $shootingCategories = $query->get();
         return response()->json([
