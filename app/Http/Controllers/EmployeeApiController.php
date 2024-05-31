@@ -69,16 +69,14 @@ class EmployeeApiController extends Controller
             'company_id' => 'required',
             'position_id' => 'required',
             'email' => 'required',
+            'password' => 'nullable',
             'phone' => 'required',
             'gender' => 'required',
             'nrc_number' => 'required',
             'department_id' => 'required',
             'photo_path' => 'nullable',
         ]);
-
-        // Find the employee record
         $employee = User::findOrFail($id);
-
         // Update the email if it has changed
         if ($request->has('email') && $validatedData['email'] != $employee->email) {
             $employee->email = $validatedData['email'];
@@ -101,7 +99,17 @@ class EmployeeApiController extends Controller
             // Retain the existing file path if no new file is uploaded
             $validatedData['photo_path'] = $employee->photo_path;
         }
-        $employee->update($validatedData);
+        // Hash the password if it is provided
+        if ($request->password) {
+            $validatedData['password'] = Hash::make($request->password);
+        } else {
+            // Ensure the password is not overwritten with null
+            unset($validatedData['password']);
+        }
+
+        // Update the employee data
+        $employee->fill($validatedData);
+        $employee->save();
         return response()->json([
             "status" => "success",
             "employee" => $employee
