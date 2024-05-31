@@ -77,7 +77,6 @@ class AssignedTasksApiController extends Controller
                     $file->move(public_path('file'), $fileName);
                     $shootingData['document'] = $fileName;
                 }
-
                 $shooting = Shooting::create($shootingData);
                 // Attach shooting to assigned task
                 $assignedTasks->shooting()->attach($shooting->id);
@@ -144,8 +143,9 @@ class AssignedTasksApiController extends Controller
     //DELETE
     public function assignedTasksDelete($id)
     {
-        AssignedTask::findOrFail($id)->delete();
-        $assignedTasks = AssignedTask::get();
+        $assignedTask = AssignedTask::findOrFail($id);
+        $assignedTask->delete();
+        $assignedTasks = AssignedTask::all();
         return response()->json([
             'status' => 'success',
             'Employee' => $assignedTasks
@@ -166,13 +166,6 @@ class AssignedTasksApiController extends Controller
             "assignedTask" => $assignedTask
         ]);
     }
-    // public function assignedTasksDetails($id){
-    //     $assignedTask = AssignedTask::where('id',$id)->with('customer','project','user','design.artworkSizes','shooting.shootingAccessoryCategories')->get();
-    //     return response()->json([
-    //         'status' => "success",
-    //         'assignedTask' => $assignedTask
-    //     ]);
-    // }
     public function assignedTasksDetails($id)
     {
         // Fetch the assigned task with related data
@@ -184,7 +177,6 @@ class AssignedTasksApiController extends Controller
                 if ($task->design->isEmpty()) {
                     unset($task->design);
                 }
-
                 // Check if the shooting data is empty and remove the key if it is
                 if ($task->shooting->isEmpty()) {
                     unset($task->shooting);
@@ -208,14 +200,31 @@ class AssignedTasksApiController extends Controller
                         return $shooting;
                     });
                 }
-
                 return $task;
             });
-
         return response()->json([
             'status' => "success",
             'assignedTask' => $assignedTask
         ]);
     }
-
+    public function assignedTasksEmployee($id)
+    {
+        $assignedTasks = AssignedTask::where('user_id', $id)
+            ->with(['customer', 'project', 'user', 'design.artworkSizes', 'shooting.shootingAccessoryCategories'])
+            ->get();
+        // Filter out empty 'design' and 'shooting' relationships
+        $assignedTasks = $assignedTasks->map(function ($task) {
+            if ($task->relationLoaded('design') && $task->design->isEmpty()) {
+                unset($task->design);
+            }
+            if ($task->relationLoaded('shooting') && $task->shooting->isEmpty()) {
+                unset($task->shooting);
+            }
+            return $task;
+        });
+        return response()->json([
+            "status" => 200,
+            "assignedTasks" => $assignedTasks
+        ]);
+    }
 }

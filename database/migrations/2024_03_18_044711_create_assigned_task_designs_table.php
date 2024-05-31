@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('assigned_task_designs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('assigned_task_id');
-            $table->unsignedBigInteger('design_id');
+            $table->foreignId('assigned_task_id')->constrained()->onDelete('cascade');
+            $table->foreignId('design_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

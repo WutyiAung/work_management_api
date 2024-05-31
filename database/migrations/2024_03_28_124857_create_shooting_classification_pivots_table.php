@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('shooting_classification_pivots', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('shooting_id');
-            $table->unsignedBigInteger('shooting_accessory_category_id');;
+            $table->foreignId('shooting_id')->constrained()->onDelete('cascade');
+            $table->foreignId('shooting_accessory_category_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

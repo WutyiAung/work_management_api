@@ -22,10 +22,8 @@ return new class extends Migration
             $table->string('contact_phone')->nullable();
             $table->string('duration')->nullable();
             $table->string('type')->nullable();
-            // $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
+            // $table->foreignId('customer_id')->constrained()m->cascadeOnDelete();
             $table->string('client')->nullable();
-            $table->string('date')->nullable();
-            $table->string('time')->nullable();
             $table->string('video_shooting_project')->nullable();
             $table->string('photo_shooting_project')->nullable();
             $table->string('arrive_office_on_time')->nullable();

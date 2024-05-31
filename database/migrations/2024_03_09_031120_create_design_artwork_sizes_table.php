@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('design_artwork_sizes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('design_id');
-            $table->unsignedBigInteger('artwork_size_id');
+            $table->foreignId('design_id')->constrained()->onDelete('cascade');
+            $table->foreignId('artwork_size_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

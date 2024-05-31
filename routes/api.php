@@ -83,6 +83,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::delete('assigned-tasks/delete/{id}',[AssignedTasksApiController::class,'assignedTasksDelete']);
     Route::post('assigned-tasks/update/{id}',[AssignedTasksApiController::class,'assignedTasksUpdate']);
     Route::get('assigned-tasks/{id}',[AssignedTasksApiController::class,'assignedTasksDetails']);
+    Route::get('assigned-tasks/employee/{id}',[AssignedTasksApiController::class,'assignedTasksEmployee']);
 
     //Report
     Route::post('report-create',[ReportApiController::class,'reportCreate']);

@@ -27,6 +27,7 @@ class EmployeeRequest extends FormRequest
             'position_id' => 'required',
             'password' => 'required',
             'email' => 'required',
+            'role' => 'nullable',
             'phone' => 'required',
             'gender' => 'required',
             'nrc_number' => 'required',

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('assigned_task_shootings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('assigned_task_id');
-            $table->unsignedBigInteger('shooting_id');
+            $table->foreignId('assigned_task_id')->constrained()->onDelete('cascade');
+            $table->foreignId('shooting_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

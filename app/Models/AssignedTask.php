@@ -25,4 +25,13 @@ class AssignedTask extends Model
     public function shooting(){
         return $this->belongsToMany(Shooting::class,'assigned_task_shootings');
     }
+    // Adding the deleting event to remove pivot table entries
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function ($assignedTask) {
+            $assignedTask->design()->detach();
+            $assignedTask->shooting()->detach();
+        });
+    }
 }
