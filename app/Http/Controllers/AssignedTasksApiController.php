@@ -170,44 +170,35 @@ class AssignedTasksApiController extends Controller
     {
         // Fetch the assigned task with related data
         $assignedTask = AssignedTask::where('id', $id)
-            ->with(['customer', 'project', 'user', 'design.artworkSizes', 'shooting.shootingAccessoryCategories'])
-            ->first(); // Use first to get a single object instead of a collection
+            ->with('customer', 'project', 'user','shooting.shootingAccessoryCategories')
+            ->first();
 
-        if ($assignedTask) {
-            // Check if the design data is empty and remove the key if it is
-            if ($assignedTask->design->isEmpty()) {
-                unset($assignedTask->design);
-            }
-            // Check if the shooting data is empty and remove the key if it is
-            if ($assignedTask->shooting->isEmpty()) {
-                unset($assignedTask->shooting);
-            } else {
-                // Rename shooting_accessory_categories to shooting_accessories
-                $assignedTask->shooting = $assignedTask->shooting->map(function ($shooting) {
-                    $shooting->shooting_accessories = $shooting->shootingAccessoryCategories;
-                    unset($shooting->shootingAccessoryCategories);
+        // Initialize response array
+        $response = [
+            'status' => 'success',
+            'assignedTask' => $assignedTask->makeHidden(['design', 'shooting'])
+        ];
 
-                    // Convert crew_list string to an actual array
-                    if (isset($shooting->crew_list)) {
-                        $crewListString = $shooting->crew_list;
-                        $crewListString = trim($crewListString, "[]");
-                        $crewListArray = array_map('trim', explode(',', $crewListString));
-                        $crewListArray = array_map(function($item) {
-                            return trim($item, "'");
-                        }, $crewListArray);
-                        $shooting->crew_list = $crewListArray;
-                    }
-
-                    return $shooting;
-                });
-            }
+        // Add first design and its artwork sizes if available
+        if ($assignedTask && isset($assignedTask->design[0])) {
+            $response['assignedTask']['designData'] = $assignedTask->design[0];
+            $response['assignedTask']['artworkSizes'] = $assignedTask->design[0]->artwork_sizes;
+        } else {
+            $response['assignedTask']['designData'] = null;
+            $response['assignedTask']['artworkSizes'] = null;
         }
 
-        return response()->json([
-            'status' => "success",
-            'assignedTask' => $assignedTask // This will be an object, not an array
-        ]);
+        // Add first shooting and its accessory categories if available
+        if ($assignedTask && isset($assignedTask->shooting[0])) {
+            $response['assignedTask']['shootingData'] = $assignedTask->shooting[0];
+        } else {
+            $response['assignedTask']['shootingData'] = null;
+        }
+        return response()->json($response);
     }
+
+
+
 
     public function assignedTasksEmployee($id)
     {
