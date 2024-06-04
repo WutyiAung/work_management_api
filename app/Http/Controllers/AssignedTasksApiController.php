@@ -160,6 +160,17 @@ class AssignedTasksApiController extends Controller
             // Add first shooting and its accessory categories if available
             if (isset($assignedTask->shooting[0])) {
                 $taskData['shootingData'] = $assignedTask->shooting[0];
+                $shooting = $assignedTask->shooting[0];
+                // Convert crew_list string to an actual array
+                if (isset($shooting->crew_list)) {
+                    $crewListString = $shooting->crew_list;
+                    $crewListString = trim($crewListString, "[]");
+                    $crewListArray = array_map('trim', explode(',', $crewListString));
+                    $crewListArray = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $crewListArray);
+                    $shooting->crew_list = $crewListArray;
+                }
             } else {
                 $taskData['shootingData'] = null;
             }
@@ -223,6 +234,17 @@ class AssignedTasksApiController extends Controller
         // Add first shooting and its accessory categories if available
         if ($assignedTask && isset($assignedTask->shooting[0])) {
             $response['assignedTask']['shootingData'] = $assignedTask->shooting[0];
+            $shooting = $assignedTask->shooting[0];
+            // Convert crew_list string to an actual array
+            if (isset($shooting->crew_list)) {
+                $crewListString = $shooting->crew_list;
+                $crewListString = trim($crewListString, "[]");
+                $crewListArray = array_map('trim', explode(',', $crewListString));
+                $crewListArray = array_map(function($item) {
+                    return trim($item, "'");
+                }, $crewListArray);
+                $shooting->crew_list = $crewListArray;
+            }
         } else {
             $response['assignedTask']['shootingData'] = null;
         }
