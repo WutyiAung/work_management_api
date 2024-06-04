@@ -135,7 +135,7 @@ class AssignedTasksApiController extends Controller
     public function assignedTasks()
     {
         // Get all assigned tasks with their related customer, project, user, and shooting (including accessory categories)
-        $assignedTasks = AssignedTask::with('customer', 'project', 'user','shooting.shootingAccessoryCategories')->get();
+        $assignedTasks = AssignedTask::with('customer', 'project', 'user', 'shooting.shootingAccessoryCategories')->get();
 
         // Initialize response array
         $response = [
@@ -151,7 +151,7 @@ class AssignedTasksApiController extends Controller
             // Add first design and its artwork sizes if available
             if (isset($assignedTask->design[0])) {
                 $taskData['designData'] = $assignedTask->design[0];
-                $taskData['artworkSizes'] = $assignedTask->design[0]->artworkSizes[0];
+                $taskData['designData']['artworkSizes'] = $assignedTask->design[0]->artworkSizes[0];
             } else {
                 $taskData['designData'] = null;
                 $taskData['artworkSizes'] = null;
@@ -170,6 +170,7 @@ class AssignedTasksApiController extends Controller
 
         return response()->json($response);
     }
+
 
     //DELETE
     public function assignedTasksDelete($id)
