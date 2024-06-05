@@ -9,6 +9,18 @@ class Report extends Model
 {
     use HasFactory;
     protected $guarded=[];
+    protected $appends = ['imageUrl','videoUrl','documentUrl'];
+    protected $with = ['project','customer','task'];
+    public function getImageUrlAttribute()
+    {
+        return asset('file/' . $this->photo_path);
+    }
+    public function getVideoUrlAttribute(){
+        return asset('file/'. $this->video_path);
+    }
+    public function getDocumentUrlAttribute(){
+        return asset('file/'. $this->attachment_path);
+    }
     public function project(){
         return $this->belongsTo(Project::class);
     }

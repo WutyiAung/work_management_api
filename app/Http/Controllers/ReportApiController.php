@@ -51,7 +51,7 @@ class ReportApiController extends Controller
         ]);
     }
     public function report(){
-        $report = Report::with('project','customer','task')->get();
+        $report = Report::get();
         return response()->json([
             "status" => "success",
             "reports" => $report
