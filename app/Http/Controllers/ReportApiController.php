@@ -4,13 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\ReportRequest;
+use App\Models\AssignedTask;
 use Illuminate\Support\Facades\File;
 
 class ReportApiController extends Controller
 {
     //Create
     public function reportCreate(ReportRequest $request){
+        $assignedTask = AssignedTask::where('id',$request->assigned_task_id)->first();
+        $assignedTask->status = 'inProgress';
+        $assignedTask->save();
         $validatedData = $request->validated();
         if($request->hasFile('attachment_path')){
             $contractPath = $request->file('attachment_path');
@@ -135,6 +140,20 @@ class ReportApiController extends Controller
         return response()->json([
             "status" => 200,
             "report" => $report
+        ]);
+    }
+    public function reportsEmployee($id){
+        $reports = Report::where('user_id',$id)->get();
+        return response()->json([
+            "status" => 200,
+            "reports" => $reports
+        ]);
+    }
+    public function reportsTask($id){
+        $reports = Report::where('assigned_task_id',$id)->first();
+        return response()->json([
+            "status" => 200,
+            "reports" => $reports
         ]);
     }
 }
