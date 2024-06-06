@@ -55,19 +55,26 @@ class ReportApiController extends Controller
         $taskId = $request->query('task_id');
         $id = $request->query('id');
         $employeeId = $request->query('employee_id');
+        if ($id) {
+            $report = Report::find($id);
 
-        Log::info('Query Parameters:', [
-            'task_id' => $taskId,
-            'id' => $id,
-            'employee_id' => $employeeId,
-        ]);
+            if (!$report) {
+                return response()->json([
+                    "status" => 404,
+                    "message" => "Report not found"
+                ], 404);
+            }
+
+            return response()->json([
+                "status" => "success",
+                "report" => $report
+            ]);
+        }
 
         $query = Report::query();
 
         if ($taskId) {
             $query->where('assigned_task_id', $taskId);
-        } elseif ($id) {
-            $query->where('id', $id);
         } elseif ($employeeId) {
             $query->where('user_id', $employeeId);
         }
