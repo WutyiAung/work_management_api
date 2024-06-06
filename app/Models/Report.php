@@ -10,7 +10,7 @@ class Report extends Model
     use HasFactory;
     protected $guarded=[];
     protected $appends = ['imageUrl','videoUrl','documentUrl'];
-    protected $with = ['project','customer','task'];
+    protected $with = ['project','customer','task','user'];
     public function getImageUrlAttribute()
     {
         return asset('file/' . $this->photo_path);
@@ -29,5 +29,8 @@ class Report extends Model
     }
     public function task(){
         return $this->belongsTo(AssignedTask::class,'assigned_task_id');
+    }
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 }

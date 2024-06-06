@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('shooting_accessory_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('accessory_name')->nullable();
+            $table->string('accessory_name')->unique();
             $table->integer('required_qty')->nullable();
             $table->integer('taken_qty')->default('0');
             $table->integer('returned_qty')->default('0');

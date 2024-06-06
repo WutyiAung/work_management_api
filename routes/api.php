@@ -87,12 +87,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
     //Report
     Route::post('report-create',[ReportApiController::class,'reportCreate']);
-    Route::get  ('reports',[ReportApiController::class,'report']);
+    Route::get('reports',[ReportApiController::class,'index']);
     Route::post('reports-update/{id}',[ReportApiController::class,'reportUpdate']);
     Route::delete('reports-delete/{id}',[ReportApiController::class,'reportDelete']);
-    Route::get('reports/{id}',[ReportApiController::class,'index']);
-    Route::get('reports/employee/{id}',[ReportApiController::class,'reportsEmployee']);
-    Route::get('reports/task/{id}',[ReportApiController::class,'reportsTask']);
 
     //TaskProjectType
     Route::post('task-types',[TaskProjectTypeApiController::class,'create']);

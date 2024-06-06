@@ -50,11 +50,40 @@ class ReportApiController extends Controller
             "reports" => $reports
         ]);
     }
-    public function report(){
-        $report = Report::get();
+    public function index(Request $request)
+    {
+        $taskId = $request->query('task_id');
+        $id = $request->query('id');
+        $employeeId = $request->query('employee_id');
+
+        Log::info('Query Parameters:', [
+            'task_id' => $taskId,
+            'id' => $id,
+            'employee_id' => $employeeId,
+        ]);
+
+        $query = Report::query();
+
+        if ($taskId) {
+            $query->where('assigned_task_id', $taskId);
+        } elseif ($id) {
+            $query->where('id', $id);
+        } elseif ($employeeId) {
+            $query->where('user_id', $employeeId);
+        }
+
+        $reports = $query->get();
+
+        if ($reports->isEmpty()) {
+            return response()->json([
+                "status" => 404,
+                "message" => "No reports found"
+            ], 404);
+        }
+
         return response()->json([
             "status" => "success",
-            "reports" => $report
+            "reports" => $reports
         ]);
     }
     public function reportUpdate(ReportRequest $request, $id){
@@ -132,27 +161,6 @@ class ReportApiController extends Controller
         $reports = Report::get();
         return response()->json([
             "status" => "success",
-            "reports" => $reports
-        ]);
-    }
-    public function index($id){
-        $report = Report::where('assigned_task_id',$id)->first();
-        return response()->json([
-            "status" => 200,
-            "report" => $report
-        ]);
-    }
-    public function reportsEmployee($id){
-        $reports = Report::where('user_id',$id)->get();
-        return response()->json([
-            "status" => 200,
-            "reports" => $reports
-        ]);
-    }
-    public function reportsTask($id){
-        $reports = Report::where('assigned_task_id',$id)->first();
-        return response()->json([
-            "status" => 200,
             "reports" => $reports
         ]);
     }

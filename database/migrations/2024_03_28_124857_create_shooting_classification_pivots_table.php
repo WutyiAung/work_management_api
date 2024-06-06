@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('shooting_classification_pivots', function (Blueprint $table) {
             $table->id();
             $table->foreignId('shooting_id')->constrained()->onDelete('cascade');
-            $table->foreignId('shooting_accessory_category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('shooting_accessory_category_id')->constrained()->onDelete('cascade')->name('fk_shooting_accessory_category'); ;
             $table->timestamps();
         });
     }

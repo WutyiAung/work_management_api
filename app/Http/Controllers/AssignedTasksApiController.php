@@ -310,6 +310,7 @@ class AssignedTasksApiController extends Controller
             if (is_array($shootingCategories)) {
                 $categoryIds = [];
                 foreach ($shootingCategories as $category) {
+                    // Use updateOrCreate to update existing or create new records
                     $shootingCategory = ShootingAccessoryCategory::updateOrCreate(
                         ['accessory_name' => $category['accessory_name']],
                         [
@@ -318,8 +319,7 @@ class AssignedTasksApiController extends Controller
                             'returned_qty' => $category['returned_qty']
                         ]
                     );
-                    // Add the shooting id to the pivot table
-                    $categoryIds[$shootingCategory->id] = ['shooting_id' => $shooting->id];
+                    $categoryIds[] = $shootingCategory->id;
                 }
                 // Sync the pivot table with the updated accessory categories
                 $shooting->shootingAccessoryCategories()->sync($categoryIds);
