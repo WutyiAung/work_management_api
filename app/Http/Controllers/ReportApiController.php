@@ -55,12 +55,13 @@ class ReportApiController extends Controller
         $taskId = $request->query('task_id');
         $id = $request->query('id');
         $employeeId = $request->query('employee_id');
-        if ($id) {
+        // Check if id is valid and not 'undefined' or null
+        if ($id && $id !== 'undefined' && $id !== 'null') {
             $report = Report::find($id);
 
             if (!$report) {
                 return response()->json([
-                    "status" => 404,
+                    "status" => "failure",
                     "message" => "Report not found"
                 ], 404);
             }
@@ -73,9 +74,13 @@ class ReportApiController extends Controller
 
         $query = Report::query();
 
-        if ($taskId) {
+        // Check if task_id is valid and not 'undefined' or null
+        if ($taskId && $taskId !== 'undefined' && $taskId !== 'null') {
             $query->where('assigned_task_id', $taskId);
-        } elseif ($employeeId) {
+        }
+
+        // Check if employee_id is valid and not 'undefined' or null
+        if ($employeeId && $employeeId !== 'undefined' && $employeeId !== 'null') {
             $query->where('user_id', $employeeId);
         }
 
@@ -83,7 +88,7 @@ class ReportApiController extends Controller
 
         if ($reports->isEmpty()) {
             return response()->json([
-                "status" => 404,
+                "status" => "failure",
                 "message" => "No reports found"
             ], 404);
         }
@@ -93,6 +98,8 @@ class ReportApiController extends Controller
             "reports" => $reports
         ]);
     }
+
+
     public function reportUpdate(ReportRequest $request, $id){
         $report = Report::findOrFail($id);
         $validatedData = $request->validated();
