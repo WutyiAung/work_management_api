@@ -55,51 +55,56 @@ class ReportApiController extends Controller
         $taskId = $request->query('task_id');
         $id = $request->query('id');
         $employeeId = $request->query('employee_id');
-        // Check if id is valid and not 'undefined' or null
+        $fromDate = $request->query('from_date');
+        $toDate = $request->query('to_date');
         if ($id && $id !== 'undefined' && $id !== 'null') {
             $report = Report::find($id);
-
             if (!$report) {
                 return response()->json([
-                    "status" => "failure",
+                    "status" => 404,
                     "message" => "Report not found"
                 ], 404);
             }
-
             return response()->json([
                 "status" => "success",
                 "report" => $report
             ]);
         }
-
         $query = Report::query();
-
-        // Check if task_id is valid and not 'undefined' or null
         if ($taskId && $taskId !== 'undefined' && $taskId !== 'null') {
             $query->where('assigned_task_id', $taskId);
         }
-
+        if ($employeeId && $employeeId !== 'undefined' && $employeeId !== 'null') {
+            $query->where('user_id', $employeeId);
+        }
         // Check if employee_id is valid and not 'undefined' or null
         if ($employeeId && $employeeId !== 'undefined' && $employeeId !== 'null') {
             $query->where('user_id', $employeeId);
         }
 
+        // Check if from_date is provided
+        if ($fromDate && $fromDate !== 'undefined' && $fromDate !== 'null') {
+            // If only from_date is provided, filter reports for that specific date
+            if (!$toDate || $toDate === 'undefined' || $toDate === 'null') {
+                $query->whereDate('created_at', $fromDate);
+            } else {
+                // If both from_date and to_date are provided, filter reports within the date range
+                $query->whereDate('created_at', '>=', $fromDate)
+                      ->whereDate('created_at', '<=', $toDate);
+            }
+        }
         $reports = $query->get();
-
         if ($reports->isEmpty()) {
             return response()->json([
-                "status" => "failure",
+                "status" => 404,
                 "message" => "No reports found"
             ], 404);
         }
-
         return response()->json([
             "status" => "success",
             "reports" => $reports
         ]);
     }
-
-
     public function reportUpdate(ReportRequest $request, $id){
         $report = Report::findOrFail($id);
         $validatedData = $request->validated();
