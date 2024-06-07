@@ -14,7 +14,7 @@ class ReportApiController extends Controller
     //Create
     public function reportCreate(ReportRequest $request){
         $assignedTask = AssignedTask::where('id',$request->assigned_task_id)->first();
-        $assignedTask->status = 'inProgress';
+        $assignedTask->status = $request->status;
         $assignedTask->save();
         $validatedData = $request->validated();
         if($request->hasFile('attachment_path')){
