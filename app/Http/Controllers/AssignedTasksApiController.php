@@ -454,21 +454,51 @@ class AssignedTasksApiController extends Controller
     public function assignedTasksEmployee($id)
     {
         $assignedTasks = AssignedTask::where('user_id', $id)
-            ->with(['customer', 'project', 'user', 'design.artworkSizes', 'shooting.shootingAccessoryCategories'])
+            ->with(['customer', 'project', 'user', 'shooting.shootingAccessoryCategories'])
             ->get();
-        // Filter out empty 'design' and 'shooting' relationships
-        $assignedTasks = $assignedTasks->map(function ($task) {
-            if ($task->relationLoaded('design') && $task->design->isEmpty()) {
-                unset($task->design);
+        // Initialize response array
+        $response = [
+            'status' => 'success',
+            'assignedTasks' => [] // Note the plural form here
+        ];
+
+        // Loop through each assigned task
+        foreach ($assignedTasks as $assignedTask) {
+            // Make hidden fields and convert to array
+            $taskData = $assignedTask->makeHidden(['design', 'shooting'])->toArray();
+
+            // Add first design and its artwork sizes if available
+            if (isset($assignedTask->design[0])) {
+                $taskData['designData'] = $assignedTask->design[0];
+                $taskData['designData']['artworkSizes'] = $assignedTask->design[0]->artworkSizes[0];
+            } else {
+                $taskData['designData'] = null;
+                $taskData['artworkSizes'] = null;
             }
-            if ($task->relationLoaded('shooting') && $task->shooting->isEmpty()) {
-                unset($task->shooting);
+
+            // Add first shooting and its accessory categories if available
+            if (isset($assignedTask->shooting[0])) {
+                $taskData['shootingData'] = $assignedTask->shooting[0];
+                $taskData['shootingData']['shooting_accessories'] = $assignedTask->shooting[0]->shootingAccessoryCategories;
+                $shooting = $assignedTask->shooting[0];
+                // Convert crew_list string to an actual array
+                if (isset($shooting->crew_list)) {
+                    $crewListString = $shooting->crew_list;
+                    $crewListString = trim($crewListString, "[]");
+                    $crewListArray = array_map('trim', explode(',', $crewListString));
+                    $crewListArray = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $crewListArray);
+                    $shooting->crew_list = $crewListArray;
+                }
+            } else {
+                $taskData['shootingData'] = null;
             }
-            return $task;
-        });
-        return response()->json([
-            "status" => 200,
-            "assignedTasks" => $assignedTasks
-        ]);
+
+            // Add the task data to the response array
+            $response['assignedTasks'][] = $taskData;
+        }
+
+        return response()->json($response);
     }
 }
