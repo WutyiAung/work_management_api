@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Report;
+use App\Models\Shooting;
+use App\Models\AssignedTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\ReportRequest;
-use App\Models\AssignedTask;
 use Illuminate\Support\Facades\File;
+use App\Models\ShootingAccessoryCategory;
 
 class ReportApiController extends Controller
 {
@@ -43,12 +45,38 @@ class ReportApiController extends Controller
             // Add the filename to the validated data
             $validatedData['video_path'] = $invoicePathName;
         }
+        if ($request->filled('shooting_accessories')) {
+            $this->updateShootingAccessory($request, $assignedTask);
+        }
         $validatedData['status'] = $validatedData['status'] ?? 'pending';
         $reports = Report::create($validatedData);
         return response()->json([
             "status" => "success",
             "reports" => $reports
         ]);
+    }
+    public function updateShootingAccessory($request,$assignedTask){
+        $shooting = $assignedTask->shooting()->first();
+            $shootingCategories = json_decode($request->input('shooting_accessories'), true);
+            if (is_array($shootingCategories)) {
+                $categoryIds = [];
+                foreach ($shootingCategories as $category) {
+                    // Use updateOrCreate to update existing or create new records
+                    $shootingCategory = ShootingAccessoryCategory::updateOrCreate(
+                        ['accessory_name' => $category['accessory_name']],
+                        [
+                            'required_qty' => $category['required_qty'],
+                            'taken_qty' => $category['taken_qty'],
+                            'returned_qty' => $category['returned_qty']
+                        ]
+                    );
+                    $categoryIds[] = $shootingCategory->id;
+                }
+                // Sync the pivot table with the updated accessory categories
+                $shooting->shootingAccessoryCategories()->sync($categoryIds);
+            } else {
+                throw new \Exception('The shooting accessories field must be an array.');
+            }
     }
     public function index(Request $request)
     {
