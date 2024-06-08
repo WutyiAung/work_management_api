@@ -59,7 +59,6 @@ class ReportApiController extends Controller
      private function updateShootingAccessory($request, $assignedTask)
      {
          $shooting = $assignedTask->shooting()->firstOrCreate([]);
-
          $shootingCategories = json_decode($request->input('shooting_accessories'), true);
          if (!is_array($shootingCategories)) {
              throw new \Exception('The shooting accessories field must be an array.');
@@ -194,6 +193,12 @@ class ReportApiController extends Controller
         } else {
             // No file uploaded, retain the existing file path
             $validatedData['video_path'] = $report->video_path;
+        }
+        $assignedTask = AssignedTask::where('id',$report->assigned_task_id)->with('shooting')->first();
+        $assignedTask->status = $request->status;
+        $assignedTask->save();
+        if ($request->filled('shooting_accessories')) {
+            $this->updateShootingAccessory($request, $assignedTask);
         }
 
         $validatedData['status'] = $validatedData['status'] ?? 'pending';
