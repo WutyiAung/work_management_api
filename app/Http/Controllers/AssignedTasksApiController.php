@@ -141,7 +141,6 @@ class AssignedTasksApiController extends Controller
             ], 500);
         }
     }
-
     private function handleDesign($request)
     {
         $designData = $request->only([
@@ -171,7 +170,6 @@ class AssignedTasksApiController extends Controller
 
         return $design;
     }
-
     private function handleShooting($request)
     {
         $shootingData = $request->only([
@@ -209,7 +207,6 @@ class AssignedTasksApiController extends Controller
 
         return $shooting;
     }
-
     public function assignedTasksUpdate(AssignedTasksRequest $request, $id)
     {
         DB::beginTransaction();
@@ -243,7 +240,6 @@ class AssignedTasksApiController extends Controller
             ], 500);
         }
     }
-
     private function updateDesign($request, $assignedTask)
     {
         $design = $assignedTask->design()->first();
@@ -279,8 +275,6 @@ class AssignedTasksApiController extends Controller
             $design->artworkSizes()->syncWithoutDetaching([$artworkSize->id]);
         }
     }
-
-
     private function updateShooting($request, $assignedTask)
     {
         $shooting = $assignedTask->shooting()->first();
@@ -328,9 +322,6 @@ class AssignedTasksApiController extends Controller
             }
         }
     }
-
-
-
     //GET
     public function assignedTasks()
     {
@@ -342,7 +333,6 @@ class AssignedTasksApiController extends Controller
             'status' => 'success',
             'assignedTasks' => [] // Note the plural form here
         ];
-
         // Loop through each assigned task
         foreach ($assignedTasks as $assignedTask) {
             // Make hidden fields and convert to array
@@ -393,21 +383,6 @@ class AssignedTasksApiController extends Controller
             'Employee' => $assignedTasks
         ]);
     }
-    //UPDATE
-    // public function assignedTasksUpdate(AssignedTasksRequest $request, $id)
-    // {
-    //     $validatedData = $request->validated();
-    //     // Check if 'status' is not provided or its value is null, then set default value
-    //     if (!isset($validatedData['status']) || $validatedData['status'] === null) {
-    //         $validatedData['status'] = 'pending';
-    //     }
-    //     $assignedTask = AssignedTask::findOrFail($id);
-    //     $assignedTask->update($validatedData);
-    //     return response()->json([
-    //         "status" => "success",
-    //         "assignedTask" => $assignedTask
-    //     ]);
-    // }
     public function assignedTasksDetails($id)
     {
         // Fetch the assigned task with related data
