@@ -81,7 +81,6 @@ class ReportApiController extends Controller
         $shooting->shootingAccessoryCategories()->sync($categoryIds);
         Log::info($request);
     }
-
     public function index(Request $request)
     {
         $taskId = $request->query('task_id');
@@ -91,42 +90,32 @@ class ReportApiController extends Controller
         $toDate = $request->query('to_date');
 
         if ($id && $id !== 'undefined' && $id !== 'null') {
-            $report = Report::with(['task.shooting.shootingAccessoryCategories' => function($query) {
-                $query->select('shooting_accessory_categories.id', 'shooting_accessory_categories.accessory_name', 'shooting_accessory_categories.required_qty', 'shooting_accessory_categories.taken_qty', 'shooting_accessory_categories.returned_qty');
-            }])->find($id);
-
+            $report = Report::with('task.shooting.shootingAccessoryCategories')->find($id);
             if (!$report) {
                 return response()->json([
                     "status" => 404,
                     "message" => "Report not found"
                 ], 404);
             }
-
-            // Transform the data
-            $report->task->shooting_accessories = $report->task->shooting->flatMap(function($shooting) {
-                return $shooting->shootingAccessoryCategories;
-            });
-
+            $report->task->shootingData = $report->task->shooting;
             unset($report->task->shooting);
+            foreach ($report->task->shootingData as $shooting) {
+                $shooting->shooting_accessories = $shooting->shootingAccessoryCategories;
+                unset($shooting->shootingAccessoryCategories);
+            }
 
             return response()->json([
                 "status" => "success",
                 "report" => $report
             ]);
         }
-
-        $query = Report::with(['task.shooting.shootingAccessoryCategories' => function($query) {
-            $query->select('shooting_accessory_categories.id', 'shooting_accessory_categories.accessory_name', 'shooting_accessory_categories.required_qty', 'shooting_accessory_categories.taken_qty', 'shooting_accessory_categories.returned_qty');
-        }]);
-
+        $query = Report::with('task.shooting.shootingAccessoryCategories');
         if ($taskId && $taskId !== 'undefined' && $taskId !== 'null') {
             $query->where('assigned_task_id', $taskId);
         }
-
         if ($employeeId && $employeeId !== 'undefined' && $employeeId !== 'null') {
             $query->where('user_id', $employeeId);
         }
-
         if ($fromDate && $fromDate !== 'undefined' && $fromDate !== 'null') {
             $fromDate = Carbon::parse($fromDate)->startOfDay();
             if ($toDate && $toDate !== 'undefined' && $toDate !== 'null') {
@@ -136,31 +125,26 @@ class ReportApiController extends Controller
                 $query->whereDate('created_at', $fromDate);
             }
         }
-
         $reports = $query->get();
-
         if ($reports->isEmpty()) {
             return response()->json([
                 "status" => 404,
                 "message" => "No reports found"
             ], 404);
         }
-
-        // Transform the data for all reports
-        $reports->each(function($report) {
-            $report->task->shooting_accessories = $report->task->shooting->flatMap(function($shooting) {
-                return $shooting->shootingAccessoryCategories;
-            });
-
+        $reports->each(function ($report) {
+            $report->task->shootingData = $report->task->shooting;
             unset($report->task->shooting);
+            foreach ($report->task->shootingData as $shooting) {
+                $shooting->shooting_accessories = $shooting->shootingAccessoryCategories;
+                unset($shooting->shootingAccessoryCategories);
+            }
         });
-
         return response()->json([
             "status" => "success",
             "reports" => $reports
         ]);
     }
-
     public function reportUpdate(ReportRequest $request, $id){
         $report = Report::findOrFail($id);
         $validatedData = $request->validated();
