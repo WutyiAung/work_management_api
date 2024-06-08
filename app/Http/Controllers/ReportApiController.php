@@ -15,7 +15,7 @@ class ReportApiController extends Controller
 {
     //Create
     public function reportCreate(ReportRequest $request){
-        $assignedTask = AssignedTask::where('id',$request->assigned_task_id)->first();
+        $assignedTask = AssignedTask::where('id',$request->assigned_task_id)->with('shooting')->first();
         $assignedTask->status = $request->status;
         $assignedTask->save();
         $validatedData = $request->validated();
@@ -55,29 +55,32 @@ class ReportApiController extends Controller
             "reports" => $reports
         ]);
     }
-    public function updateShootingAccessory($request,$assignedTask){
-        $shooting = $assignedTask->shooting()->first();
-            $shootingCategories = json_decode($request->input('shooting_accessories'), true);
-            if (is_array($shootingCategories)) {
-                $categoryIds = [];
-                foreach ($shootingCategories as $category) {
-                    // Use updateOrCreate to update existing or create new records
-                    $shootingCategory = ShootingAccessoryCategory::updateOrCreate(
-                        ['accessory_name' => $category['accessory_name']],
-                        [
-                            'required_qty' => $category['required_qty'],
-                            'taken_qty' => $category['taken_qty'],
-                            'returned_qty' => $category['returned_qty']
-                        ]
-                    );
-                    $categoryIds[] = $shootingCategory->id;
-                }
-                // Sync the pivot table with the updated accessory categories
-                $shooting->shootingAccessoryCategories()->sync($categoryIds);
-            } else {
-                throw new \Exception('The shooting accessories field must be an array.');
-            }
-    }
+     // Update Shooting Accessories
+     private function updateShootingAccessory($request, $assignedTask)
+     {
+         $shooting = $assignedTask->shooting()->firstOrCreate([]);
+
+         $shootingCategories = json_decode($request->input('shooting_accessories'), true);
+         if (!is_array($shootingCategories)) {
+             throw new \Exception('The shooting accessories field must be an array.');
+         }
+
+         $categoryIds = [];
+         foreach ($shootingCategories as $category) {
+             $shootingCategory = ShootingAccessoryCategory::updateOrCreate(
+                 ['accessory_name' => $category['accessory_name']],
+                 [
+                     'required_qty' => $category['required_qty'],
+                     'taken_qty' => $category['taken_qty'],
+                     'returned_qty' => $category['returned_qty']
+                 ]
+             );
+             $categoryIds[] = $shootingCategory->id;
+         }
+
+         $shooting->shootingAccessoryCategories()->sync($categoryIds);
+         Log::info($request);
+     }
     public function index(Request $request)
     {
         $taskId = $request->query('task_id');
