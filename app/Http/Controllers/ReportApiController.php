@@ -18,6 +18,7 @@ class ReportApiController extends Controller
     public function reportCreate(ReportRequest $request){
         $assignedTask = AssignedTask::where('id',$request->assigned_task_id)->with('shooting')->first();
         $assignedTask->status = $request->status;
+        $assignedTask->progress = $request->progress;
         $assignedTask->save();
         $validatedData = $request->validated();
         if($request->hasFile('attachment_path')){
@@ -191,6 +192,7 @@ class ReportApiController extends Controller
         }
         $assignedTask = AssignedTask::where('id',$report->assigned_task_id)->with('shooting')->first();
         $assignedTask->status = $request->status;
+        $assignedTask->progress = $request->progress;
         $assignedTask->save();
         if ($request->filled('shooting_accessories')) {
             $this->updateShootingAccessory($request, $assignedTask);
