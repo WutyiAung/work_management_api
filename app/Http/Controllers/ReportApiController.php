@@ -97,11 +97,14 @@ class ReportApiController extends Controller
                     "message" => "Report not found"
                 ], 404);
             }
-            $report->task->shootingData = $report->task->shooting;
+            // If shootingData is not empty, get the first item
+            $report->task->shootingData = $report->task->shooting->isNotEmpty() ? $report->task->shooting->first() : null;
             unset($report->task->shooting);
-            foreach ($report->task->shootingData as $shooting) {
-                $shooting->shooting_accessories = $shooting->shootingAccessoryCategories;
-                unset($shooting->shootingAccessoryCategories);
+
+            // Rename shootingAccessoryCategories to shooting_accessories
+            if ($report->task->shootingData) {
+                $report->task->shootingData->shooting_accessories = $report->task->shootingData->shootingAccessoryCategories;
+                unset($report->task->shootingData->shootingAccessoryCategories);
             }
 
             return response()->json([
@@ -109,6 +112,7 @@ class ReportApiController extends Controller
                 "report" => $report
             ]);
         }
+
         $query = Report::with('task.shooting.shootingAccessoryCategories');
         if ($taskId && $taskId !== 'undefined' && $taskId !== 'null') {
             $query->where('assigned_task_id', $taskId);
@@ -133,11 +137,14 @@ class ReportApiController extends Controller
             ], 404);
         }
         $reports->each(function ($report) {
-            $report->task->shootingData = $report->task->shooting;
+            // If shootingData is not empty, get the first item
+            $report->task->shootingData = $report->task->shooting->isNotEmpty() ? $report->task->shooting->first() : null;
             unset($report->task->shooting);
-            foreach ($report->task->shootingData as $shooting) {
-                $shooting->shooting_accessories = $shooting->shootingAccessoryCategories;
-                unset($shooting->shootingAccessoryCategories);
+
+            // Rename shootingAccessoryCategories to shooting_accessories
+            if ($report->task->shootingData) {
+                $report->task->shootingData->shooting_accessories = $report->task->shootingData->shootingAccessoryCategories;
+                unset($report->task->shootingData->shootingAccessoryCategories);
             }
         });
         return response()->json([
@@ -145,6 +152,7 @@ class ReportApiController extends Controller
             "reports" => $reports
         ]);
     }
+
     public function reportUpdate(ReportRequest $request, $id){
         $report = Report::findOrFail($id);
         $validatedData = $request->validated();
