@@ -365,7 +365,8 @@ class AssignedTasksApiController extends Controller
             } else {
                 $taskData['shootingData'] = null;
             }
-
+            // Convert is_reported field to boolean
+            $taskData['is_reported'] = $assignedTask->is_reported === "1";
             // Add the task data to the response array
             $response['assignedTasks'][] = $taskData;
         }
@@ -424,6 +425,7 @@ class AssignedTasksApiController extends Controller
         } else {
             $response['assignedTask']['shootingData'] = null;
         }
+        $response['assignedTask']['is_reported'] = $assignedTask->is_reported === "1";
         return response()->json($response);
     }
     public function assignedTasksEmployee($id)
@@ -469,7 +471,8 @@ class AssignedTasksApiController extends Controller
             } else {
                 $taskData['shootingData'] = null;
             }
-
+            // Convert is_reported field to boolean
+            $taskData['is_reported'] = $assignedTask->is_reported === "1";
             // Add the task data to the response array
             $response['assignedTasks'][] = $taskData;
         }
