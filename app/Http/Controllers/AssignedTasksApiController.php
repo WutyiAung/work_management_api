@@ -246,6 +246,10 @@ class AssignedTasksApiController extends Controller
                 Log:info($request);
             } elseif ($request->filled('shooting_location')) {
                 $this->updateShooting($request, $assignedTask);
+            } elseif ($request->filled('feature_type')) {
+                $this->updateFrontEnd($request, $assignedTask);
+            } elseif ($request->filled('use_case')) {
+                $this-> updateBackEnd($request, $assignedTask);
             }
 
             DB::commit();
@@ -346,6 +350,33 @@ class AssignedTasksApiController extends Controller
                 throw new \Exception('The shooting accessories field must be an array.');
             }
         }
+    }
+    private function updateFrontEnd($request, $assignedTask)
+    {
+        $frontEnd = $assignedTask->frontEnd()->first();
+        if (!$frontEnd) {
+            $frontEnd = new FrontEnd();
+            $assignedTask->frontEnd()->save($frontEnd);
+        }
+
+        $frontEndData = $request->only([
+            'feature_type', 'reference_figma', 'detail_task', 'design_validation_detail', 'styling_detail',
+            'api_integration'
+        ]);
+        $frontEnd->update($frontEndData);
+    }
+    private function updateBackEnd($request, $assignedTask)
+    {
+        $backEnd = $assignedTask->backEnd()->first();
+        if (!$backEnd) {
+            $backEnd = new BackEnd();
+            $assignedTask->backEnd()->save($backEnd);
+        }
+
+        $backEndData = $request->only([
+            'use_case','crud_type','detail','database_migration','controller_name','routes','related_view'
+        ]);
+        $backEnd->update($backEndData);
     }
     //GET
     public function assignedTasks()
