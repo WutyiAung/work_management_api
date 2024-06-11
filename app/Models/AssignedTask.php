@@ -25,6 +25,12 @@ class AssignedTask extends Model
     public function shooting(){
         return $this->belongsToMany(Shooting::class,'assigned_task_shootings');
     }
+    public function frontEnd(){
+        return $this->belongsToMany(FrontEnd::class,'assigned_task_front_ends');
+    }
+    public function backEnd(){
+        return $this->belongsToMany(BackEnd::class,'assigned_task_back_ends');
+    }
     // Adding the deleting event to remove pivot table entries
     protected static function boot()
     {

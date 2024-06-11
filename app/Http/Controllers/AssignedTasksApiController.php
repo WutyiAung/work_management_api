@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\ShootingAccessoryCategory;
 use App\Http\Requests\AssignedTasksRequest;
+use App\Models\BackEnd;
+use App\Models\FrontEnd;
 
 class AssignedTasksApiController extends Controller
 {
@@ -122,6 +124,12 @@ class AssignedTasksApiController extends Controller
             } elseif ($request->filled('shooting_location')) {
                 $shooting = $this->handleShooting($request);
                 $assignedTasks->shooting()->attach($shooting->id);
+            } elseif($request->filled('feature_type')){
+                $frontEnd = $this->handleFrontEnd($request);
+                $assignedTasks->frontEnd()->attach($frontEnd->id);
+            } elseif($request->filled('use_case')){
+                $backEnd = $this->handleBackEnd($request);
+                $assignedTasks->backEnd()->attach($backEnd->id);
             }
 
             DB::commit();
@@ -206,6 +214,21 @@ class AssignedTasksApiController extends Controller
         }
 
         return $shooting;
+    }
+    private function handleFrontEnd($request){
+        $frontEndData = $request->only([
+            'feature_type', 'reference_figma', 'detail_task', 'design_validation_detail', 'styling_detail',
+            'api_integration'
+        ]);
+        $frontEnd = FrontEnd::create($frontEndData);
+        return $frontEnd;
+    }
+    private function handleBackEnd($request){
+        $backEndData = $request->only([
+            'use_case','crud_type','detail','database_migration','controller_name','routes','related_view'
+        ]);
+        $backEnd = BackEnd::create($backEndData);
+        return $backEnd;
     }
     public function assignedTasksUpdate(AssignedTasksRequest $request, $id)
     {
