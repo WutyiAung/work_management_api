@@ -215,7 +215,8 @@ class AssignedTasksApiController extends Controller
 
         return $shooting;
     }
-    private function handleFrontEnd($request){
+    private function handleFrontEnd($request)
+    {
         $frontEndData = $request->only([
             'feature_type', 'reference_figma', 'detail_task', 'design_validation_detail', 'styling_detail',
             'api_integration'
@@ -223,7 +224,8 @@ class AssignedTasksApiController extends Controller
         $frontEnd = FrontEnd::create($frontEndData);
         return $frontEnd;
     }
-    private function handleBackEnd($request){
+    private function handleBackEnd($request)
+    {
         $backEndData = $request->only([
             'use_case','crud_type','detail','database_migration','controller_name','routes','related_view'
         ]);
@@ -388,6 +390,20 @@ class AssignedTasksApiController extends Controller
             } else {
                 $taskData['shootingData'] = null;
             }
+
+            if (isset($assignedTask->frontEnd[0])) {
+                $taskData['frontEndData'] = $assignedTask->frontEnd[0];
+            } else {
+                $taskData['frontEndData'] = null;
+            }
+
+            if (isset($assignedTask->backEnd[0])) {
+                $taskData['backEndData'] = $assignedTask->backEnd[0];
+            } else {
+                $taskData['backEndData'] = null;
+            }
+
+
             // Convert is_reported field to boolean
             $taskData['is_reported'] = $assignedTask->is_reported === "1";
             // Add the task data to the response array
@@ -448,6 +464,19 @@ class AssignedTasksApiController extends Controller
         } else {
             $response['assignedTask']['shootingData'] = null;
         }
+
+        if ($assignedTask && isset($assignedTask->frontEnd[0])) {
+            $response['frontEndData'] = $assignedTask->frontEnd[0];
+        } else {
+            $response['frontEndData'] = null;
+        }
+
+        if ($assignedTask && isset($assignedTask->backEnd[0])) {
+            $response['backEndData'] = $assignedTask->backEnd[0];
+        } else {
+            $response['backEndData'] = null;
+        }
+
         $response['assignedTask']['is_reported'] = $assignedTask->is_reported === "1";
         return response()->json($response);
     }
@@ -493,6 +522,18 @@ class AssignedTasksApiController extends Controller
                 }
             } else {
                 $taskData['shootingData'] = null;
+            }
+
+            if (isset($assignedTask->frontEnd[0])) {
+                $taskData['frontEndData'] = $assignedTask->frontEnd[0];
+            } else {
+                $taskData['frontEndData'] = null;
+            }
+
+            if (isset($assignedTask->backEnd[0])) {
+                $taskData['backEndData'] = $assignedTask->backEnd[0];
+            } else {
+                $taskData['backEndData'] = null;
             }
             // Convert is_reported field to boolean
             $taskData['is_reported'] = $assignedTask->is_reported === "1";
