@@ -2,9 +2,12 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Company;
+use App\Models\Position;
+use App\Models\Department;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -25,9 +28,17 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'company_id' => Company::inRandomOrder()->first()->id,
+            'position_id' => Position::inRandomOrder()->first()->id,
             'password' => static::$password ??= Hash::make('password'),
+            'email' => fake()->unique()->safeEmail(),
+            'role' => 'employee',
+            'phone' => fake()->phoneNumber(),
+            'gender' => fake()->randomElement(['male', 'female']),
+            'nrc_number' => fake()->numerify('###########'),
+            'department_id' => Department::inRandomOrder()->first()->id,
+            'photo_path' => null,
+            'email_verified_at' => now(),
             'remember_token' => Str::random(10),
         ];
     }

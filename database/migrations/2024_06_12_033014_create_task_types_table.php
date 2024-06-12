@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('video_editings', function (Blueprint $table) {
+        Schema::create('task_types', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->string('table_name')->nullable();
+            $table->enum('table_type',['Dynamic','Fixed'])->default('Fixed');
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('video_editings');
+        Schema::dropIfExists('task_types');
     }
 };

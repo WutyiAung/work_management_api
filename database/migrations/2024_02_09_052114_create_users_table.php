@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('position_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('password');
             $table->string('email')->unique();
-            $table->enum('role',['admin','employee'])->default('employee');
+            $table->enum('role',['owner','admin','employee'])->default('employee');
             $table->string('phone')->unique()->nullable()->nullable();
             $table->enum('gender',['male','female'])->nullable();
             $table->string('nrc_number')->nullable();

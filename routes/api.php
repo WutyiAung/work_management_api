@@ -14,6 +14,7 @@ use App\Http\Controllers\AssignedTasksApiController;
 use App\Http\Controllers\DesignApiController;
 use App\Http\Controllers\ShootingApiController;
 use App\Http\Controllers\TaskProjectTypeApiController;
+use App\Http\Controllers\TaskTypeApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,20 +92,6 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::post('reports-update/{id}',[ReportApiController::class,'reportUpdate']);
     Route::delete('reports-delete/{id}',[ReportApiController::class,'reportDelete']);
 
-    //TaskProjectType
-    Route::post('task-types',[TaskProjectTypeApiController::class,'create']);
-    Route::get('task-types',[TaskProjectTypeApiController::class,'index']);
-    Route::get('task-types/{id}',[TaskProjectTypeApiController::class,'taskTypeDetail']);
-    Route::post('task-types/{id}',[TaskProjectTypeApiController::class,'update']);
-    Route::delete('task-types/{id}',[TaskProjectTypeApiController::class,'delete']);
-
-    //ProjectTypes
-    Route::post('project-types',[TaskProjectTypeApiController::class,'createProjectType']);
-    Route::get('project-types',[TaskProjectTypeApiController::class,'indexProjectType']);
-    Route::get('project-types/{id}',[TaskProjectTypeApiController::class,'projectTypeDetail']);
-    Route::post('project-types/{id}',[TaskProjectTypeApiController::class,'updateProjectType']);
-    Route::delete('project-types/{id}',[TaskProjectTypeApiController::class,'deleteProjectType']);
-
     //Design
     Route::post('designs',[DesignApiController::class,'create']);
     Route::get('designs',[DesignApiController::class,'index']);
@@ -129,6 +116,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::delete('shooting-accessories/{id}',[ShootingApiController::class,'deleteShootingAccessory']);
     Route::get('shooting-accessories/{id}',[ShootingApiController::class,'getShootingAccessory']);
     Route::get('shooting-accessory/{id}',[ShootingApiController::class,'getShootingAccessoryDetail']);
+
+    //Task Types
+    Route::apiResource('/task-types',TaskTypeApiController::class);
 });
 
 
