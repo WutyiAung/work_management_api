@@ -10,14 +10,27 @@ class TaskTypeApiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $taskTypes = TaskType::get();
+        $companyId = $request->query('company_id');
+
+        // Query builder for TaskType
+        $query = TaskType::query();
+
+        // Filter by company_id if provided
+        if ($companyId && $companyId !== 'undefined' && $companyId !== 'null') {
+            $query->where('company_id', $companyId);
+        }
+
+        // Fetch the task types based on the filtered query
+        $taskTypes = $query->get();
+
         return response()->json([
-            'status' => 201,
-            'taskTypes' => $taskTypes,
+            'status' => 'success',
+            'taskTypes' => $taskTypes
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
