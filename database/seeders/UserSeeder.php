@@ -26,6 +26,12 @@ class UserSeeder extends Seeder
             'role' => 'admin',
             'password' => 'Admin123@'
         ]);
+        $this->createUser([
+            'name' => 'Employee',
+            'email' => 'employee123@gmail.com',
+            'role' => 'employee',
+            'password' => 'Employee123@'
+        ]);
     }
     private function createUser(array $data): void
     {

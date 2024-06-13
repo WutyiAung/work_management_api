@@ -34,6 +34,12 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
             'password' => 'Admin123@'
         ]);
+        $this->createUser([
+            'name' => 'Employee',
+            'email' => 'employee123@gmail.com',
+            'role' => 'employee',
+            'password' => 'Employee123@'
+        ]);
         Customer::factory(10)->create();
         Company::factory(10)->create();
         Department::factory(10)->create();
