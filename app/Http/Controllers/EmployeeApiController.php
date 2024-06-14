@@ -42,13 +42,22 @@ class EmployeeApiController extends Controller
             'employee' => $employee
         ]);
     }
-    public function employee(){
-        $Employees = User::with('company','department','position')->get();
+    public function employee(Request $request) {
+        $companyId = $request->query('company_id');
+        $query = User::with('company', 'department', 'position');
+
+        if ($companyId && $companyId !== 'undefined' && $companyId !== 'null') {
+            $query->where('company_id', $companyId);
+        }
+
+        $employees = $query->get();
+
         return response()->json([
             'status' => 'success',
-            'employees' => $Employees
+            'employees' => $employees
         ]);
     }
+
     public function EmployeeDelete($id){
         $employee = User::findOrFail($id);
         if ($employee->photo_path) {

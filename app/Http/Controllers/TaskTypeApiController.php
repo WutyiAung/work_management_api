@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TaskType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TaskTypeApiController extends Controller
 {
@@ -16,6 +17,7 @@ class TaskTypeApiController extends Controller
 
         // Query builder for TaskType
         $query = TaskType::query();
+        // Log::info($query);
 
         // Filter by company_id if provided
         if ($companyId && $companyId !== 'undefined' && $companyId !== 'null') {
