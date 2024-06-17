@@ -41,11 +41,52 @@ class DatabaseSeeder extends Seeder
             'password' => 'Employee123@'
         ]);
         Customer::factory(10)->create();
+        $this->createCompany([
+            'name' => 'k-win'
+        ]);
+        $this->createCompany([
+            'name' => 'beyond'
+        ]);
         Company::factory(10)->create();
         Department::factory(10)->create();
         Position::factory(10)->create();
         User::factory(10)->create();
         Project::factory(10)->create();
+        $this->createTaskType([
+            'name' => 'Graphic Design',
+            'company_id' => '2',
+            'table_name' => 'graphic_designs',
+        ]);
+        $this->createTaskType([
+            'name' => 'Shooting',
+            'company_id' => '2',
+            'table_name' => 'shootings',
+        ]);
+        $this->createTaskType([
+            'name' => 'Frontend',
+            'company_id' => '1',
+            'table_name' => 'front_ends',
+        ]);
+        $this->createTaskType([
+            'name' => 'Backend',
+            'company_id' => '1',
+            'table_name' => 'back_ends',
+        ]);
+        $this->createTaskType([
+            'name' => 'UiUx',
+            'company_id' => '1',
+            'table_name' => 'ui_uxes',
+        ]);
+        $this->createTaskType([
+            'name' => 'Testing',
+            'company_id' => '1',
+            'table_name' => 'testings'
+        ]);
+        $this->createTaskType([
+            'name' => 'Deployment',
+            'company_id' => '1',
+            'table_name' => 'deployments',
+        ]);
         TaskType::factory(10)->create();
     }
     private function createUser(array $data): void
@@ -62,6 +103,21 @@ class DatabaseSeeder extends Seeder
             'nrc_number' => null,
             'department_id' => null,
             'photo_path' => null
+        ]);
+    }
+    private function createTaskType(array $data): void
+    {
+        TaskType::create([
+            'name' => $data['name'],
+            'company_id' => $data['company_id'],
+            'table_name' => $data['table_name'],
+            'table_type' => 'Fixed'
+        ]);
+    }
+    private function createCompany(array $data): void
+    {
+        Company::create([
+            'name' => $data['name']
         ]);
     }
 }

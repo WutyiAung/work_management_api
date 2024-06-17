@@ -420,7 +420,25 @@ class AssignedTasksApiController extends Controller
                 $taskData['backEndData'] = null;
             }
 
+            if (isset($assignedTask->uiUx[0])) {
+                $taskData['uiUxData'] = $assignedTask->uiUx[0];
+            } else {
+                $taskData['uiUxData'] = null;
+            }
 
+            if (isset($assignedTask->testing[0])) {
+                $taskData['testingData'] = $assignedTask->testing[0];
+            } else {
+                $taskData['testingData'] = null;
+            }
+
+            if (isset($assignedTask->deployment[0])) {
+                $taskData['deployment'] = $assignedTask->deployment[0];
+                $taskData['deployment']['server_restart_after_deploy'] = $assignedTask->deployment[0]->server_restart_after_deploy === 1;
+                $taskData['deployment']['apk_released_if_mobile'] = $assignedTask->deployment[0]->apk_released_if_mobile === 1;
+            } else {
+                $taskData['deployment'] = null;
+            }
             // Convert is_reported field to boolean
             $taskData['is_reported'] = $assignedTask->is_reported === "1";
             // Add the task data to the response array
@@ -494,6 +512,26 @@ class AssignedTasksApiController extends Controller
             $response['backEndData'] = null;
         }
 
+        if ($assignedTask && isset($assignedTask->uiUx[0])) {
+            $response['uiUxData'] = $assignedTask->uiUx[0];
+        } else {
+            $response['uiUxData'] = null;
+        }
+
+        if ($assignedTask && isset($assignedTask->testing[0])) {
+            $response['testingData'] = $assignedTask->testing[0];
+        } else {
+            $response['testingData'] = null;
+        }
+
+        if ($assignedTask && isset($assignedTask->deployment[0])) {
+            $response['deployment'] = $assignedTask->deployment[0];
+            $response['deployment']['server_restart_after_deploy'] = $assignedTask->deployment[0]->server_restart_after_deploy === 1;
+            $response['deployment']['apk_released_if_mobile'] = $assignedTask->deployment[0]->apk_released_if_mobile === 1;
+        } else {
+            $response['deployment'] = null;
+        }
+
         $response['assignedTask']['is_reported'] = $assignedTask->is_reported === "1";
         return response()->json($response);
     }
@@ -552,6 +590,27 @@ class AssignedTasksApiController extends Controller
             } else {
                 $taskData['backEndData'] = null;
             }
+
+            if (isset($assignedTask->uiUx[0])) {
+                $taskData['uiUxData'] = $assignedTask->uiUx[0];
+            } else {
+                $taskData['uiUxData'] = null;
+            }
+
+            if (isset($assignedTask->testing[0])) {
+                $taskData['testingData'] = $assignedTask->testing[0];
+            } else {
+                $taskData['testingData'] = null;
+            }
+
+            if (isset($assignedTask->deployment[0])) {
+                $taskData['deployment'] = $assignedTask->deployment[0];
+                $taskData['deployment']['server_restart_after_deploy'] = $assignedTask->deployment[0]->server_restart_after_deploy === 1;
+                $taskData['deployment']['apk_released_if_mobile'] = $assignedTask->deployment[0]->apk_released_if_mobile === 1;
+            } else {
+                $taskData['deployment'] = null;
+            }
+
             // Convert is_reported field to boolean
             $taskData['is_reported'] = $assignedTask->is_reported === "1";
             // Add the task data to the response array
