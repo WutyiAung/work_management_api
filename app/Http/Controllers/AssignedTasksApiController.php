@@ -2,114 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UiUx;
 use App\Models\Design;
+use App\Models\BackEnd;
+use App\Models\Testing;
+use App\Models\FrontEnd;
 use App\Models\Shooting;
+use App\Models\Deployment;
 use App\Models\ArtworkSize;
 use App\Models\AssignedTask;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\ShootingAccessoryCategory;
 use App\Http\Requests\AssignedTasksRequest;
-use App\Models\BackEnd;
-use App\Models\FrontEnd;
 
 class AssignedTasksApiController extends Controller
 {
-    // public function assignedTasksCreate(AssignedTasksRequest $request)
-    // {
-    //     try {
-    //         $validatedData = $request->validated();
-    //         $validatedData['status'] = $validatedData['status'] ?? 'pending';
-    //         $assignedTasks = AssignedTask::create($validatedData);
-    //         if ($request->filled('brand')) {
-    //             $designs = [];
-    //             $designData = $request->only([
-    //                 'brand', 'type_of_media', 'deadline', 'content_writer_id', 'designer_id',
-    //                 'visual_copy', 'headline', 'body', 'objective', 'important_info',
-    //                 'taste_style', 'reference'
-    //             ]);
-    //             $photoName = null;
-    //             if ($request->hasFile('reference_photo')) {
-    //                 $photo = $request->file('reference_photo');
-    //                 $photoName = uniqid() . '_' . $photo->getClientOriginalName();
-    //                 $photo->move(public_path('file'), $photoName);
-    //                 $designData['reference_photo'] = $photoName;
-    //             }
-    //             $design = Design::create($designData);
-    //             $assignedTasks->design()->attach($design->id);
-    //             $designs[] = $design;
-    //             Log::info($request);
-    //             if (
-    //                 $request->filled('visual_format') && $request->filled('aspect_ratio') &&
-    //                 $request->filled('width') && $request->filled('height') && $request->filled('resolution')
-    //             ) {
-    //                 $artworkSize = ArtworkSize::create($request->only([
-    //                     'visual_format', 'aspect_ratio', 'width', 'height', 'resolution'
-    //                 ]));
-    //                 Log::info($request);
-    //                 $design->artworkSizes()->attach($artworkSize->id);
-    //             }
-    //             return response()->json([
-    //                 "status" => "success",
-    //                 "assignedTasks" => $assignedTasks,
-    //                 "designs" => $designs,
-    //                 "artwork_size" => $artworkSize
-    //             ]);
-    //         } else if ($request->filled('shooting_location')) {
-    //             $shootings = [];
-    //             $shootingData = $request->only([
-    //                 'shooting_location', 'type_detail', 'script_detail', 'scene_number', 'contact_name', 'contact_phone', 'duration', 'type', 'client', 'date', 'time', 'video_shooting_project', 'photo_shooting_project', 'arrive_office_on_time', 'transportation_charge', 'out_time', 'in_time', 'crew_list', 'project_details'
-    //             ]);
-    //             $fileName = null;
-    //             if ($request->hasFile('document')) {
-    //                 $file = $request->file('document');
-    //                 $fileName = uniqid() . '_' . $file->getClientOriginalName();
-    //                 $file->move(public_path('file'), $fileName);
-    //                 $shootingData['document'] = $fileName;
-    //             }
-    //             $shooting = Shooting::create($shootingData);
-    //             $assignedTasks->shooting()->attach($shooting->id);
-    //             $shootings[] = $shooting;
-    //             Log::info($request->all());
-    //             if ($request->filled('shooting_accessories')) {
-    //                 $shootingCategories = json_decode($request->input('shooting_accessories'), true);
-    //                 Log::info('Decoded shooting categories: ' . print_r($shootingCategories, true));
-    //                 if (is_array($shootingCategories)) {
-    //                     foreach ($shootingCategories as $category) {
-    //                         $shootingCategory = ShootingAccessoryCategory::create([
-    //                             'accessory_name' => $category['accessory_name'],
-    //                             'required_qty' => $category['required_qty'],
-    //                             'taken_qty' => $category['required_qty'],
-    //                             'returned_qty' => $category['returned_qty']
-    //                         ]);
-    //                         $shooting->shootingAccessoryCategories()->attach($shootingCategory->id);
-    //                     }
-    //                     return response()->json(['message' => 'Data stored successfully'], 200);
-    //                 } else {
-    //                     return response()->json(['error' => 'The shooting accessories field must be an array.'], 400);
-    //                 }
-    //             }
-    //             return response()->json([
-    //                 "status" => "success",
-    //                 "assignedTasks" => $assignedTasks,
-    //             ]);
-    //         }
-    //         return response()->json([
-    //             "status" => "success",
-    //             "assignedTasks" => $assignedTasks,
-    //         ]);
-    //         return response()->json([
-    //             "status" => "success",
-    //             "assignedTasks" => $assignedTasks,
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             "status" => "error",
-    //             "message" => "An error occurred while processing the request.",
-    //             "error" => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
     public function assignedTasksCreate(AssignedTasksRequest $request)
     {
         DB::beginTransaction();
@@ -130,6 +38,15 @@ class AssignedTasksApiController extends Controller
             } elseif($request->filled('use_case')){
                 $backEnd = $this->handleBackEnd($request);
                 $assignedTasks->backEnd()->attach($backEnd->id);
+            } elseif($request->filled('customer_requirement')){
+                $uiUx = $this->handleUiUx($request);
+                $assignedTasks->uiUx()->attach($uiUx->id);
+            } elseif($request->filled('testing_type')){
+                $testing = $this->handleTesting($request);
+                $assignedTasks->testing()->attach($testing->id);
+            } elseif($request->filled('deployment_type')){
+                $deployment = $this->handleDeployment($request);
+                $assignedTasks->deployment()->attach($deployment->id);
             }
 
             DB::commit();
@@ -232,6 +149,30 @@ class AssignedTasksApiController extends Controller
         $backEnd = BackEnd::create($backEndData);
         return $backEnd;
     }
+    private function handleUiUx($request)
+    {
+        $uiUxData = $request->only([
+            'customer_requirement','ui_type','reference_platform','ui_detail_task','ui_styling_detail','total_ui_screen','confirmed_ui_screen'
+        ]);
+        $uiUx = UiUx::create($uiUxData);
+        return $uiUx;
+    }
+    private function handleTesting($request)
+    {
+        $testingData = $request->only([
+            'testing_type','initial_test_brief','testing_issues','testing_overall','customer_comment',
+        ]);
+        $testing = Testing::create($testingData);
+        return $testing;
+    }
+    private function handleDeployment($request)
+    {
+        $deploymentData = $request->only([
+            'deployment_type','deployment_brief','server_type','instance_name','configuration','db_type','db_name','ip_and_port','username','project_type','dev_type','sub_domain','server_restart_after_deploy','apk_released_if_mobile','deployment_issues','deployment_overall'
+        ]);
+        $deployment = Deployment::create($deploymentData);
+        return $deployment;
+    }
     public function assignedTasksUpdate(AssignedTasksRequest $request, $id)
     {
         DB::beginTransaction();
@@ -249,7 +190,13 @@ class AssignedTasksApiController extends Controller
             } elseif ($request->filled('feature_type')) {
                 $this->updateFrontEnd($request, $assignedTask);
             } elseif ($request->filled('use_case')) {
-                $this-> updateBackEnd($request, $assignedTask);
+                $this->updateBackEnd($request, $assignedTask);
+            } elseif ($request->filled('customer_requirement')){
+                $this->updateUiUx($request, $assignedTask);
+            } elseif ($request->filled('testing_type')){
+                $this->updateTesting($request, $assignedTask);
+            } elseif ($request->filled('deployment_type')){
+                $this->updateDeployment($request, $assignedTask);
             }
 
             DB::commit();
@@ -377,6 +324,45 @@ class AssignedTasksApiController extends Controller
             'use_case','crud_type','detail','database_migration','controller_name','routes','related_view'
         ]);
         $backEnd->update($backEndData);
+    }
+    private function updateUiUx($request, $assignedTask)
+    {
+        $uiUx = $assignedTask->uiUx()->first();
+        if(!$uiUx) {
+            $uiUx = new UiUx();
+            $assignedTask->uiUx()->save($uiUx);
+        }
+
+        $uiUxData = $request->only([
+            'customer_requirement','ui_type','reference_platform','ui_detail_task','ui_styling_detail','total_ui_screen','confirmed_ui_screen'
+        ]);
+        $uiUx->update($uiUxData);
+    }
+    private function updateTesting($request, $assignedTask)
+    {
+        $testing = $assignedTask->testing()->first();
+        if(!$testing) {
+            $testing = new Testing();
+            $assignedTask->testing()->save($testing);
+        }
+
+        $testingData = $request->only([
+            'testing_type','initial_test_brief','testing_issues','testing_overall','customer_comment',
+        ]);
+        $testing->update($testingData);
+    }
+    private function updateDeployment($request, $assignedTask)
+    {
+        $deployment = $assignedTask->deployment()->first();
+        if(!$deployment) {
+            $deployment = new Deployment();
+            $assignedTask->deployment()->save($deployment);
+        }
+
+        $deploymentData = $request->only([
+            'deployment_type','deployment_brief','server_type','instance_name','configuration','db_type','db_name','ip_and_port','username','project_type','dev_type','sub_domain','server_restart_after_deploy','apk_released_if_mobile','deployment_issues','deployment_overall'
+        ]);
+        $deployment->update($deploymentData);
     }
     //GET
     public function assignedTasks()
@@ -571,7 +557,6 @@ class AssignedTasksApiController extends Controller
             // Add the task data to the response array
             $response['assignedTasks'][] = $taskData;
         }
-
         return response()->json($response);
     }
 }

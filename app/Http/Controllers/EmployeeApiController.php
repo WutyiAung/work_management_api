@@ -7,35 +7,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\EmployeeRequest;
-use App\Models\Employee;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Imagick\Driver;
 
 class EmployeeApiController extends Controller
 {
     public function employeeCreate(EmployeeRequest $request){
          $validatedData = $request->validated();
          $validatedData['password'] = Hash::make($validatedData['password']);
-        //  if($request->hasFile('photo_path')){
-        //     $manager = new ImageManager(new Driver());
-        //     $contractPathName = uniqid().'.'.$request->file('photo_path')->getClientOriginalExtension();
-        //     $contractPath = $manager->read($request->file('photo_path'));
-        //     // $contractPath->toJpeg(1000)->save(public_path('/file').$contractPathName);
-        //     $contractPath->toJpeg(200)->save(public_path('file') . '/' . $contractPathName);
-        //     // Add the filename to the validated data
-        //     $validatedData['photo_path'] = $contractPathName;
-        // }
         if($request->hasFile('photo_path')){
             $mainPhoto = $request->file('photo_path');
             $mainPhotoName = uniqid().'_'.$mainPhoto->getClientOriginalName();
             $mainPhoto->move(public_path().'/file',$mainPhotoName);
-             // Add the filename to the validated data
              $validatedData['photo_path'] = $mainPhotoName;
         } else {
-            // Handle case where no file is uploaded
             return response()->json(['error' => 'No file uploaded'], 400);
         }
-        // Create the employee record
         $employee = User::create($validatedData);
         return response()->json([
             'status' => 'success',
@@ -45,13 +30,10 @@ class EmployeeApiController extends Controller
     public function employee(Request $request) {
         $companyId = $request->query('company_id');
         $query = User::with('company', 'department', 'position');
-
         if ($companyId && $companyId !== 'undefined' && $companyId !== 'null') {
             $query->where('company_id', $companyId);
         }
-
         $employees = $query->get();
-
         return response()->json([
             'status' => 'success',
             'employees' => $employees
@@ -90,7 +72,6 @@ class EmployeeApiController extends Controller
         if ($request->has('email') && $validatedData['email'] != $employee->email) {
             $employee->email = $validatedData['email'];
         }
-
         // Update the photo path if a new file is uploaded
         if ($request->hasFile('photo_path')) {
             $contractPath = $request->file('photo_path');

@@ -2,7 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\UiUx;
 use App\Models\User;
+use App\Models\Design;
+use App\Models\BackEnd;
+use App\Models\Project;
+use App\Models\Testing;
+use App\Models\Customer;
+use App\Models\FrontEnd;
+use App\Models\Shooting;
+use App\Models\Deployment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -30,6 +39,15 @@ class AssignedTask extends Model
     }
     public function backEnd(){
         return $this->belongsToMany(BackEnd::class,'assigned_task_back_ends');
+    }
+    public function uiUx(){
+        return $this->belongsToMany(UiUx::class,'assigned_task_ui_uxes');
+    }
+    public function testing(){
+        return $this->belongsToMany(Testing::class,'assigned_task_testings');
+    }
+    public function deployment(){
+        return $this->belongsToMany(Deployment::class,'assigned_task_deployments');
     }
     // Adding the deleting event to remove pivot table entries
     protected static function boot()
