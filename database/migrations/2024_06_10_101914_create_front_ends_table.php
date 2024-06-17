@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('front_ends', function (Blueprint $table) {
             $table->id();
-            $table->enum('feature_type',['Form','List','Dialog','Flow'])->nullable();
+            $table->string('feature_type')->nullable();
             $table->string('reference_figma')->nullable();
             $table->string('detail_task')->nullable();
             $table->string('design_validation_detail')->nullable();

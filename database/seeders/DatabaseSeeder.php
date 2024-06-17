@@ -26,20 +26,17 @@ class DatabaseSeeder extends Seeder
             'name' => 'Owner',
             'email' => 'owner123@gmail.com',
             'role' => 'owner',
-            'password' => 'Owner123@'
+            'password' => 'Owner123@',
+            'company_id' => null
         ]);
         $this->createUser([
             'name' => 'Admin',
             'email' => 'admin123@gmail.com',
             'role' => 'admin',
-            'password' => 'Admin123@'
+            'password' => 'Admin123@',
+            'company_id' => null
         ]);
-        $this->createUser([
-            'name' => 'Employee',
-            'email' => 'employee123@gmail.com',
-            'role' => 'employee',
-            'password' => 'Employee123@'
-        ]);
+
         Customer::factory(10)->create();
         $this->createCompany([
             'name' => 'k-win'
@@ -48,6 +45,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'beyond'
         ]);
         Company::factory(10)->create();
+        $this->createUser([
+            'name' => 'Min Thu Kha',
+            'email' => 'minthukha@gmail.com',
+            'role' => 'employee',
+            'password' => '00000000',
+            'company_id' => '1'
+        ]);
         Department::factory(10)->create();
         Position::factory(10)->create();
         User::factory(10)->create();
@@ -93,7 +97,7 @@ class DatabaseSeeder extends Seeder
     {
         User::create([
             'name' => $data['name'],
-            'company_id' => null,
+            'company_id' => $data['company_id'],
             'position_id' => null,
             'password' => Hash::make($data['password']),
             'email' => $data['email'],

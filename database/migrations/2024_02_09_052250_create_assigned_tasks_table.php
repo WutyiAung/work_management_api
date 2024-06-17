@@ -26,7 +26,8 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->enum('status',['pending','inProgress','done'])->default('pending');
             $table->integer('progress')->default(0);
-            $table->enum('is_reported',['0','1'])->default('0');
+            $table->boolean('is_reported')->default(false);
+            $table->boolean('is_done')->default(false);
             $table->timestamps();
         });
     }

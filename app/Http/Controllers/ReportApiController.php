@@ -20,7 +20,7 @@ class ReportApiController extends Controller
         $assignedTask = AssignedTask::where('id',$request->assigned_task_id)->with('shooting')->first();
         // $assignedTask->status = $request->status;
         $assignedTask->progress = $request->progress;
-        $assignedTask->is_reported = '1';
+        $assignedTask->is_reported = 1;
         // Check if progress is 100, and if so, set status to 'done'
         if ($request->progress == '100') {
             $request['status'] = 'done';  // Set request status to 'done'
@@ -241,7 +241,7 @@ class ReportApiController extends Controller
         }
 
         // Convert is_reported field to boolean
-        $report->task->is_reported = $report->task->is_reported === "1";
+        $report->task->is_reported = $report->task->is_reported === 1;
 
         // Generate URLs for file paths
         $report->imageUrl = url('file/' . $report->photo_path);
