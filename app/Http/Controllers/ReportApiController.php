@@ -25,6 +25,7 @@ class ReportApiController extends Controller
         if ($request->progress == '100') {
             $request['status'] = 'done';  // Set request status to 'done'
             $assignedTask->status = 'done';  // Set assigned task status to 'done'
+            $assignedTask->is_done = 1;
         } else {
             $assignedTask->status = $request->status;
         }
@@ -304,6 +305,9 @@ class ReportApiController extends Controller
         $assignedTask = AssignedTask::where('id',$report->assigned_task_id)->with('shooting')->first();
         $assignedTask->status = $request->status;
         $assignedTask->progress = $request->progress;
+        if($request->status == 'done'){
+            $assignedTask->is_done = '1';
+        }
         $assignedTask->save();
         if ($request->filled('shooting_accessories')) {
             $this->updateShootingAccessory($request, $assignedTask);
