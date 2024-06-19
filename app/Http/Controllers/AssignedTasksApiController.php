@@ -410,6 +410,17 @@ class AssignedTasksApiController extends Controller
 
             if (isset($assignedTask->frontEnd[0])) {
                 $taskData['frontEndData'] = $assignedTask->frontEnd[0];
+                $frontEnd = $assignedTask->frontEnd[0];
+                // Convert crew_list string to an actual array
+                if (isset($frontEnd->feature_type)) {
+                    $stringData = $frontEnd->feature_type;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $frontEnd->feature_type = $arrayData;
+                }
             } else {
                 $taskData['frontEndData'] = null;
             }
@@ -422,6 +433,17 @@ class AssignedTasksApiController extends Controller
 
             if (isset($assignedTask->uiUx[0])) {
                 $taskData['uiUxData'] = $assignedTask->uiUx[0];
+                $uiUx = $assignedTask->uiUx[0];
+                // Convert crew_list string to an actual array
+                if (isset($uiUx->ui_type)) {
+                    $stringData = $uiUx->ui_type;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $uiUx->ui_type = $arrayData;
+                }
             } else {
                 $taskData['uiUxData'] = null;
             }
@@ -436,6 +458,26 @@ class AssignedTasksApiController extends Controller
                 $taskData['deployment'] = $assignedTask->deployment[0];
                 $taskData['deployment']['server_restart_after_deploy'] = $assignedTask->deployment[0]->server_restart_after_deploy === 1;
                 $taskData['deployment']['apk_released_if_mobile'] = $assignedTask->deployment[0]->apk_released_if_mobile === 1;
+                $deployment = $assignedTask->deployment[0];
+                // Convert crew_list string to an actual array
+                if (isset($deployment->project_type)) {
+                    $stringData = $deployment->project_type;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $deployment->project_type = $arrayData;
+                }
+                if (isset($deployment->dev_type)) {
+                    $stringData = $deployment->dev_type;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $deployment->dev_type = $arrayData;
+                }
             } else {
                 $taskData['deployment'] = null;
             }
@@ -502,6 +544,17 @@ class AssignedTasksApiController extends Controller
 
         if ($assignedTask && isset($assignedTask->frontEnd[0])) {
             $response['frontEndData'] = $assignedTask->frontEnd[0];
+            $frontEnd = $assignedTask->frontEnd[0];
+            // Convert crew_list string to an actual array
+            if (isset($frontEnd->feature_type)) {
+                $stringData = $frontEnd->feature_type;
+                $stringData = trim($stringData, "[]");
+                $arrayData = array_map('trim', explode(',', $stringData));
+                $arrayData = array_map(function($item) {
+                    return trim($item, "'");
+                }, $arrayData);
+                $frontEnd->feature_type = $arrayData;
+            }
         } else {
             $response['frontEndData'] = null;
         }
@@ -514,6 +567,17 @@ class AssignedTasksApiController extends Controller
 
         if ($assignedTask && isset($assignedTask->uiUx[0])) {
             $response['uiUxData'] = $assignedTask->uiUx[0];
+            $uiUx = $assignedTask->uiUx[0];
+            // Convert crew_list string to an actual array
+            if (isset($uiUx->ui_type)) {
+                $stringData = $uiUx->ui_type;
+                $stringData = trim($stringData, "[]");
+                $arrayData = array_map('trim', explode(',', $stringData));
+                $arrayData = array_map(function($item) {
+                    return trim($item, "'");
+                }, $arrayData);
+                $uiUx->ui_type = $arrayData;
+            }
         } else {
             $response['uiUxData'] = null;
         }
@@ -528,6 +592,26 @@ class AssignedTasksApiController extends Controller
             $response['deployment'] = $assignedTask->deployment[0];
             $response['deployment']['server_restart_after_deploy'] = $assignedTask->deployment[0]->server_restart_after_deploy === 1;
             $response['deployment']['apk_released_if_mobile'] = $assignedTask->deployment[0]->apk_released_if_mobile === 1;
+            $deployment = $assignedTask->deployment[0];
+            // Convert crew_list string to an actual array
+            if (isset($deployment->project_type)) {
+                $stringData = $deployment->project_type;
+                $stringData = trim($stringData, "[]");
+                $arrayData = array_map('trim', explode(',', $stringData));
+                $arrayData = array_map(function($item) {
+                    return trim($item, "'");
+                }, $arrayData);
+                $deployment->project_type = $arrayData;
+            }
+            if (isset($deployment->dev_type)) {
+                $stringData = $deployment->dev_type;
+                $stringData = trim($stringData, "[]");
+                $arrayData = array_map('trim', explode(',', $stringData));
+                $arrayData = array_map(function($item) {
+                    return trim($item, "'");
+                }, $arrayData);
+                $deployment->dev_type = $arrayData;
+            }
         } else {
             $response['deployment'] = null;
         }
@@ -581,6 +665,17 @@ class AssignedTasksApiController extends Controller
 
             if (isset($assignedTask->frontEnd[0])) {
                 $taskData['frontEndData'] = $assignedTask->frontEnd[0];
+                $frontEnd = $assignedTask->frontEnd[0];
+                // Convert crew_list string to an actual array
+                if (isset($frontEnd->feature_type)) {
+                    $stringData = $frontEnd->feature_type;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $frontEnd->feature_type = $arrayData;
+                }
             } else {
                 $taskData['frontEndData'] = null;
             }
@@ -593,6 +688,17 @@ class AssignedTasksApiController extends Controller
 
             if (isset($assignedTask->uiUx[0])) {
                 $taskData['uiUxData'] = $assignedTask->uiUx[0];
+                $uiUx = $assignedTask->uiUx[0];
+                // Convert crew_list string to an actual array
+                if (isset($uiUx->ui_type)) {
+                    $stringData = $uiUx->ui_type;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $uiUx->ui_type = $arrayData;
+                }
             } else {
                 $taskData['uiUxData'] = null;
             }
@@ -607,6 +713,26 @@ class AssignedTasksApiController extends Controller
                 $taskData['deployment'] = $assignedTask->deployment[0];
                 $taskData['deployment']['server_restart_after_deploy'] = $assignedTask->deployment[0]->server_restart_after_deploy === 1;
                 $taskData['deployment']['apk_released_if_mobile'] = $assignedTask->deployment[0]->apk_released_if_mobile === 1;
+                $deployment = $assignedTask->deployment[0];
+                // Convert crew_list string to an actual array
+                if (isset($deployment->project_type)) {
+                    $stringData = $deployment->project_type;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $deployment->project_type = $arrayData;
+                }
+                if (isset($deployment->dev_type)) {
+                    $stringData = $deployment->dev_type;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $deployment->dev_type = $arrayData;
+                }
             } else {
                 $taskData['deployment'] = null;
             }

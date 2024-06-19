@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Report;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Report;
 use App\Models\AssignedTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -92,6 +93,7 @@ class ReportApiController extends Controller
         $shooting->shootingAccessoryCategories()->sync($categoryIds);
         Log::info($request);
     }
+
     // public function index(Request $request)
     // {
     //     $taskId = $request->query('task_id');
@@ -108,18 +110,7 @@ class ReportApiController extends Controller
     //                 "message" => "Report not found"
     //             ], 404);
     //         }
-    //         // If shootingData is not empty, get the first item
-    //         $report->task->shootingData = $report->task->shooting->isNotEmpty() ? $report->task->shooting->first() : null;
-    //         unset($report->task->shooting);
-
-    //         // Rename shootingAccessoryCategories to shooting_accessories
-    //         if ($report->task->shootingData) {
-    //             $report->task->shootingData->shooting_accessories = $report->task->shootingData->shootingAccessoryCategories;
-    //             unset($report->task->shootingData->shootingAccessoryCategories);
-    //         }
-    //         // Convert is_reported field to boolean
-    //         $report->task->is_reported = $report->task->is_reported === "1";
-
+    //         $this->processReport($report);
     //         return response()->json([
     //             "status" => "success",
     //             "report" => $report
@@ -150,24 +141,49 @@ class ReportApiController extends Controller
     //         ], 404);
     //     }
     //     $reports->each(function ($report) {
-    //         // If shootingData is not empty, get the first item
-    //         $report->task->shootingData = $report->task->shooting->isNotEmpty() ? $report->task->shooting->first() : null;
-    //         unset($report->task->shooting);
-
-    //         // Rename shootingAccessoryCategories to shooting_accessories
-    //         if ($report->task->shootingData) {
-    //             $report->task->shootingData->shooting_accessories = $report->task->shootingData->shootingAccessoryCategories;
-    //             unset($report->task->shootingData->shootingAccessoryCategories);
-    //         }
+    //         $this->processReport($report);
     //     });
     //     return response()->json([
     //         "status" => "success",
     //         "reports" => $reports
     //     ]);
     // }
-    // use Carbon\Carbon;
-    // use Illuminate\Http\Request;
-    // use App\Models\Report;
+
+    // private function processReport(&$report)
+    // {
+    //     // If shootingData is not empty, get the first item
+    //     $report->task->shootingData = $report->task->shooting->isNotEmpty() ? $report->task->shooting->first() : null;
+    //     unset($report->task->shooting);
+
+    //     // Rename shootingAccessoryCategories to shooting_accessories
+    //     if ($report->task->shootingData) {
+    //         $report->task->shootingData->shooting_accessories = $report->task->shootingData->shootingAccessoryCategories;
+    //         unset($report->task->shootingData->shootingAccessoryCategories);
+    //     }
+
+    //     // Convert is_reported field to boolean
+    //     $report->task->is_reported = $report->task->is_reported === 1;
+
+    //     // Generate URLs for file paths
+    //     $report->imageUrl = url('file/' . $report->photo_path);
+    //     $report->videoUrl = url('file/' . $report->video_path);
+    //     $report->documentUrl = url('file/' . $report->attachment_path);
+
+    //     // If the report has a project, generate the file URL
+    //     if (isset($report->project)) {
+    //         $report->project->fileURL = url('file/' . $report->project->document);
+    //     }
+
+    //     // If the report has a shootingData, generate the file URL
+    //     if (isset($report->task->shootingData)) {
+    //         $report->task->shootingData->fileURL = url('file/' . $report->task->shootingData->document);
+    //     }
+
+    //     // If the report has a user, generate the image URL
+    //     if (isset($report->user)) {
+    //         $report->user->imgURL = url('file/' . $report->user->photo_path);
+    //     }
+    // }
 
     public function index(Request $request)
     {
@@ -193,11 +209,9 @@ class ReportApiController extends Controller
         }
 
         $query = Report::with('task.shooting.shootingAccessoryCategories');
+
         if ($taskId && $taskId !== 'undefined' && $taskId !== 'null') {
             $query->where('assigned_task_id', $taskId);
-        }
-        if ($employeeId && $employeeId !== 'undefined' && $employeeId !== 'null') {
-            $query->where('user_id', $employeeId);
         }
         if ($fromDate && $fromDate !== 'undefined' && $fromDate !== 'null') {
             $fromDate = Carbon::parse($fromDate)->startOfDay();
@@ -208,6 +222,25 @@ class ReportApiController extends Controller
                 $query->whereDate('created_at', $fromDate);
             }
         }
+
+        // If employee_id is provided, get the user's role
+        if ($employeeId && $employeeId !== 'undefined' && $employeeId !== 'null') {
+            $user = User::find($employeeId);
+
+            // Return 404 if user is not found
+            if (!$user) {
+                return response()->json([
+                    "status" => 404,
+                    "message" => "User not found"
+                ], 404);
+            }
+
+            // If the user is an employee, filter reports by user_id
+            if ($user->role === 'employee') {
+                $query->where('user_id', $employeeId);
+            }
+        }
+
         $reports = $query->get();
         if ($reports->isEmpty()) {
             return response()->json([
@@ -222,11 +255,6 @@ class ReportApiController extends Controller
             "status" => "success",
             "reports" => $reports
         ]);
-    }
-
-    private function filterQuery($queryParam)
-    {
-        return ($queryParam && $queryParam !== 'undefined' && $queryParam !== 'null') ? $queryParam : null;
     }
 
     private function processReport(&$report)
