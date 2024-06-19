@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('assigned_tasks', function (Blueprint $table) {
-            $table->boolean('is_reported')->default(false);
             $table->boolean('is_done')->default(false);
         });
     }
