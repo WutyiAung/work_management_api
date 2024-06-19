@@ -22,8 +22,9 @@ class ReportApiController extends Controller
         // $assignedTask->status = $request->status;
         $assignedTask->progress = $request->progress;
         $assignedTask->is_reported = 1;
+        Log::info($request);
         // Check if progress is 100, and if so, set status to 'done'
-        if ($request->progress == '100') {
+        if ($request->progress === '100') {
             $request['status'] = 'done';  // Set request status to 'done'
             $assignedTask->status = 'done';  // Set assigned task status to 'done'
             $assignedTask->is_done = 1;

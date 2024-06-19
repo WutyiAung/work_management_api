@@ -179,7 +179,7 @@ class AssignedTasksApiController extends Controller
         try {
             $assignedTask = AssignedTask::findOrFail($id);
             $validatedData = $request->validated();
-            $validatedData['status'] = $validatedData['status'] ?? 'pending';
+            // $validatedData['status'] = $validatedData['status'] ?? 'pending';
             $assignedTask->update($validatedData);
 
             if ($request->filled('brand')) {
@@ -482,7 +482,8 @@ class AssignedTasksApiController extends Controller
                 $taskData['deployment'] = null;
             }
             // Convert is_reported field to boolean
-            $taskData['is_reported'] = $assignedTask->is_reported === "1";
+            $taskData['is_reported'] = $assignedTask->is_reported === 1;
+            $taskData['is_done'] = $assignedTask->is_done === 1;
             // Add the task data to the response array
             $response['assignedTasks'][] = $taskData;
         }
@@ -616,7 +617,8 @@ class AssignedTasksApiController extends Controller
             $response['deployment'] = null;
         }
 
-        $response['assignedTask']['is_reported'] = $assignedTask->is_reported === "1";
+        $response['assignedTask']['is_reported'] = $assignedTask->is_reported === 1;
+        $response['assignedTask']['is_done'] = $assignedTask->is_done === 1;
         return response()->json($response);
     }
     public function assignedTasksEmployee($id)
@@ -738,7 +740,8 @@ class AssignedTasksApiController extends Controller
             }
 
             // Convert is_reported field to boolean
-            $taskData['is_reported'] = $assignedTask->is_reported === "1";
+            $taskData['is_reported'] = $assignedTask->is_reported === 1;
+            $taskData['is_done'] = $assignedTask->is_done === 1;
             // Add the task data to the response array
             $response['assignedTasks'][] = $taskData;
         }
