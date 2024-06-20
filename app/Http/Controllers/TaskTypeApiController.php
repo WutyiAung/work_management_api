@@ -17,7 +17,6 @@ class TaskTypeApiController extends Controller
 
         // Query builder for TaskType
         $query = TaskType::query();
-        // Log::info($query);
 
         // Filter by company_id if provided
         if ($companyId && $companyId !== 'undefined' && $companyId !== 'null') {
