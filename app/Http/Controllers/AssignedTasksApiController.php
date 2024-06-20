@@ -32,7 +32,7 @@ class AssignedTasksApiController extends Controller
             } elseif ($request->filled('shooting_location')) {
                 $shooting = $this->handleShooting($request);
                 $assignedTasks->shooting()->attach($shooting->id);
-            } elseif($request->filled('frontend_type')){
+            } elseif($request->filled('feature_type')){
                 $frontEnd = $this->handleFrontEnd($request);
                 $assignedTasks->frontEnd()->attach($frontEnd->id);
             } elseif($request->filled('use_case')){
@@ -135,7 +135,7 @@ class AssignedTasksApiController extends Controller
     private function handleFrontEnd($request)
     {
         $frontEndData = $request->only([
-            'frontend_type', 'reference_figma', 'detail_task', 'design_validation_detail', 'styling_detail',
+            'feature_type', 'reference_figma', 'detail_task', 'design_validation_detail', 'styling_detail',
             'api_integration'
         ]);
         $frontEnd = FrontEnd::create($frontEndData);
@@ -187,7 +187,7 @@ class AssignedTasksApiController extends Controller
                 Log:info($request);
             } elseif ($request->filled('shooting_location')) {
                 $this->updateShooting($request, $assignedTask);
-            } elseif ($request->filled('frontend_type')) {
+            } elseif ($request->filled('feature_type')) {
                 $this->updateFrontEnd($request, $assignedTask);
             } elseif ($request->filled('use_case')) {
                 $this->updateBackEnd($request, $assignedTask);
@@ -307,7 +307,7 @@ class AssignedTasksApiController extends Controller
         }
 
         $frontEndData = $request->only([
-            'frontend_type', 'reference_figma', 'detail_task', 'design_validation_detail', 'styling_detail',
+            'feature_type', 'reference_figma', 'detail_task', 'design_validation_detail', 'styling_detail',
             'api_integration'
         ]);
         $frontEnd->update($frontEndData);
@@ -412,14 +412,14 @@ class AssignedTasksApiController extends Controller
                 $taskData['frontEndData'] = $assignedTask->frontEnd[0];
                 $frontEnd = $assignedTask->frontEnd[0];
                 // Convert crew_list string to an actual array
-                if (isset($frontEnd->frontend_type)) {
-                    $stringData = $frontEnd->frontend_type;
+                if (isset($frontEnd->feature_type)) {
+                    $stringData = $frontEnd->feature_type;
                     $stringData = trim($stringData, "[]");
                     $arrayData = array_map('trim', explode(',', $stringData));
                     $arrayData = array_map(function($item) {
                         return trim($item, "'");
                     }, $arrayData);
-                    $frontEnd->frontend_type = $arrayData;
+                    $frontEnd->feature_type = $arrayData;
                 }
             } else {
                 $taskData['frontEndData'] = null;
@@ -547,14 +547,14 @@ class AssignedTasksApiController extends Controller
             $response['frontEndData'] = $assignedTask->frontEnd[0];
             $frontEnd = $assignedTask->frontEnd[0];
             // Convert crew_list string to an actual array
-            if (isset($frontEnd->frontend_type)) {
-                $stringData = $frontEnd->frontend_type;
+            if (isset($frontEnd->feature_type)) {
+                $stringData = $frontEnd->feature_type;
                 $stringData = trim($stringData, "[]");
                 $arrayData = array_map('trim', explode(',', $stringData));
                 $arrayData = array_map(function($item) {
                     return trim($item, "'");
                 }, $arrayData);
-                $frontEnd->frontend_type = $arrayData;
+                $frontEnd->feature_type = $arrayData;
             }
         } else {
             $response['frontEndData'] = null;
@@ -669,14 +669,14 @@ class AssignedTasksApiController extends Controller
                 $taskData['frontEndData'] = $assignedTask->frontEnd[0];
                 $frontEnd = $assignedTask->frontEnd[0];
                 // Convert crew_list string to an actual array
-                if (isset($frontEnd->frontend_type)) {
-                    $stringData = $frontEnd->frontend_type;
+                if (isset($frontEnd->feature_type)) {
+                    $stringData = $frontEnd->feature_type;
                     $stringData = trim($stringData, "[]");
                     $arrayData = array_map('trim', explode(',', $stringData));
                     $arrayData = array_map(function($item) {
                         return trim($item, "'");
                     }, $arrayData);
-                    $frontEnd->frontend_type = $arrayData;
+                    $frontEnd->feature_type = $arrayData;
                 }
             } else {
                 $taskData['frontEndData'] = null;
