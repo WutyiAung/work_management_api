@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('final_deadline')->nullable();
             $table->string('account_executive')->nullable();
             $table->string('photo_retoucher')->nullable();
-            $table->string('project_description')->nullable();
-            $table->string('client_request_detail')->nullable();
+            $table->longText('project_description')->nullable();
+            $table->longText('client_request_detail')->nullable();
             $table->integer('number_of_retouch_photos')->nullable();
             $table->string('color_grade')->nullable();
             $table->string('editing_style')->nullable();

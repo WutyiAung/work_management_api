@@ -49,6 +49,12 @@ class AssignedTask extends Model
     public function deployment(){
         return $this->belongsToMany(Deployment::class,'assigned_task_deployments');
     }
+    public function photoEditing(){
+        return $this->belongsToMany(PhotoEditing::class,'assigned_task_photo_editings');
+    }
+    public function videoEditing(){
+        return $this->belongsToMany(VideoEditing::class,'assigned_task_video_editings');
+    }
     // Adding the deleting event to remove pivot table entries
     protected static function boot()
     {

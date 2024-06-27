@@ -50,10 +50,10 @@ class AssignedTasksApiController extends Controller
             } elseif($request->filled('deployment_type')){
                 $deployment = $this->handleDeployment($request);
                 $assignedTasks->deployment()->attach($deployment->id);
-            } elseif($request->filled('brand_name')){
+            } elseif($request->filled('brand_name') && !$request->filled('video_editor')){
                 $photoEditing = $this->handlePhotoEditing($request);
                 $assignedTasks->photoEditing()->attach($photoEditing->id);
-            } elseif($request->filled('video_editor')){
+            } elseif($request->filled('brand_name') && $request->filled('video_editor')){
                 $videoEditing = $this->handleVideoEditing($request);
                 $assignedTasks->videoEditing()->attach($videoEditing->id);
             }
@@ -196,8 +196,8 @@ class AssignedTasksApiController extends Controller
             'brand_name','project_title','project_start_date','draft_deadline','final_deadline','account_executive','photo_retoucher','project_description','client_request_detail','number_of_retouch_photos','color_grade','editing_style','remark','editing_reference','video_editor','motion_text_effect','three_d_animation'
         ]);
         $videoEditing = VideoEditing::create($videoEditingData);
-        if ($request->filled('hight_light')) {
-            $hightLights = json_decode($request->input('hight_light'), true);
+        if ($request->filled('high_light')) {
+            $hightLights = json_decode($request->input('high_light'), true);
             if (is_array($hightLights)) {
                 foreach ($hightLights as $hightLight) {
                     $hightLight = HighLight::create([
@@ -238,6 +238,10 @@ class AssignedTasksApiController extends Controller
                 $this->updateTesting($request, $assignedTask);
             } elseif ($request->filled('deployment_type')){
                 $this->updateDeployment($request, $assignedTask);
+            } elseif($request->filled('brand_name') && !$request->filled('video_editor')){
+                $this->updatePhotoEditing($request, $assignedTask);
+            } elseif($request->filled('brand_name') && $request->filled('video_editor')){
+                $this->updateVideoEditing($request, $assignedTask);
             }
 
             DB::commit();
@@ -405,6 +409,52 @@ class AssignedTasksApiController extends Controller
         ]);
         $deployment->update($deploymentData);
     }
+    private function updatePhotoEditing($request, $assignedTask)
+    {
+        $photoEditing = $assignedTask->photoEditing()->first();
+        if(!$photoEditing) {
+            $photoEditing = new PhotoEditing();
+            $assignedTask->photoEditing()->save($photoEditing);
+        }
+        $photoEditingData = $request->only([
+            'brand_name','project_title','project_start_date','draft_deadline','final_deadline','account_executive','photo_retoucher','project_description','client_request_detail','number_of_retouch_photos','color_grade','editing_style','remark','editing_reference'
+        ]);
+        $photoEditing->update($photoEditingData);
+    }
+    private function updateVideoEditing($request, $assignedTask)
+    {
+        $videoEditing = $assignedTask->videoEditing()->first();
+        if(!$videoEditing) {
+            $videoEditing = new VideoEditing();
+            $assignedTask->videoEditing()->save($videoEditing);
+        }
+        $videoEditingData = $request->only([
+            'brand_name','project_title','project_start_date','draft_deadline','final_deadline','account_executive','photo_retoucher','project_description','client_request_detail','number_of_retouch_photos','color_grade','editing_style','remark','editing_reference','video_editor','motion_text_effect','three_d_animation'
+        ]);
+        $videoEditing->update($videoEditingData);
+        if ($request->filled('high_light')) {
+            $hightLights = json_decode($request->input('high_light'), true);
+            if (is_array($hightLights)) {
+                $hightLightIds = [];
+                foreach ($hightLights as $hightLight) {
+                    // Use updateOrCreate to update existing or create new records
+                    $hightLightData = HighLight::updateOrCreate(
+                        // ['time' => $hightLight['time']],
+                        [
+                            'time' => $hightLight['time'],
+                            'description' => $hightLight['description'],
+                            'remark' => $hightLight['remark'],
+                        ]
+                    );
+                    $hightLightIds[] = $hightLightData->id;
+                }
+                // Sync the pivot table with the updated high light
+                $videoEditing->highLight()->sync($hightLightIds);
+            } else {
+                throw new \Exception('The high light field must be an array.');
+            }
+        }
+    }
     //GET
     public function assignedTasks()
     {
@@ -521,6 +571,30 @@ class AssignedTasksApiController extends Controller
                 }
             } else {
                 $taskData['deployment'] = null;
+            }
+
+            if (isset($assignedTask->photoEditing[0])) {
+                $taskData['photoEditingData'] = $assignedTask->photoEditing[0];
+            } else {
+                $taskData['photoEditingData'] = null;
+            }
+
+            if (isset($assignedTask->videoEditing[0])) {
+                $taskData['videoEditingData'] = $assignedTask->videoEditing[0];
+                $videoEditing = $assignedTask->videoEditing[0];
+                $taskData['videoEditingData']['high_light'] = $assignedTask->videoEditing[0]->highLight;
+                // Convert crew_list string to an actual array
+                if (isset($videoEditing->video_editor)) {
+                    $stringData = $videoEditing->video_editor;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $videoEditing->video_editor = $arrayData;
+                }
+            } else {
+                $taskData['videoEditingData'] = null;
             }
             // Convert is_reported field to boolean
             $taskData['is_reported'] = $assignedTask->is_reported === 1;
@@ -658,6 +732,30 @@ class AssignedTasksApiController extends Controller
             $response['deployment'] = null;
         }
 
+        if ($assignedTask && isset($assignedTask->photoEditing[0])) {
+            $response['photoEditingData'] = $assignedTask->photoEditing[0];
+        } else {
+            $response['photoEditingData'] = null;
+        }
+
+        if ($assignedTask && isset($assignedTask->videoEditing[0])) {
+            $response['videoEditingData'] = $assignedTask->videoEditing[0];
+            $videoEditing = $assignedTask->videoEditing[0];
+            $response['videoEditingData']['high_light'] = $assignedTask->videoEditing[0]->highLight;
+            // Convert crew_list string to an actual array
+            if (isset($videoEditing->video_editor)) {
+                $stringData = $videoEditing->video_editor;
+                $stringData = trim($stringData, "[]");
+                $arrayData = array_map('trim', explode(',', $stringData));
+                $arrayData = array_map(function($item) {
+                    return trim($item, "'");
+                }, $arrayData);
+                $videoEditing->video_editor = $arrayData;
+            }
+        } else {
+            $taskData['videoEditingData'] = null;
+        }
+
         $response['assignedTask']['is_reported'] = $assignedTask->is_reported === 1;
         $response['assignedTask']['is_done'] = $assignedTask->is_done === 1;
         return response()->json($response);
@@ -778,6 +876,30 @@ class AssignedTasksApiController extends Controller
                 }
             } else {
                 $taskData['deployment'] = null;
+            }
+
+            if (isset($assignedTask->photoEditing[0])) {
+                $taskData['photoEditingData'] = $assignedTask->photoEditing[0];
+            } else {
+                $taskData['photoEditingData'] = null;
+            }
+
+            if (isset($assignedTask->videoEditing[0])) {
+                $taskData['videoEditingData'] = $assignedTask->videoEditing[0];
+                $videoEditing = $assignedTask->videoEditing[0];
+                $taskData['videoEditingData']['high_light'] = $assignedTask->videoEditing[0]->highLight;
+                // Convert crew_list string to an actual array
+                if (isset($videoEditing->video_editor)) {
+                    $stringData = $videoEditing->video_editor;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $videoEditing->video_editor = $arrayData;
+                }
+            } else {
+                $taskData['videoEditingData'] = null;
             }
 
             // Convert is_reported field to boolean
