@@ -91,6 +91,16 @@ class DatabaseSeeder extends Seeder
             'company_id' => '1',
             'table_name' => 'deployments',
         ]);
+        $this->createTaskType([
+            'name' => 'PhotoEditing',
+            'company_id' => '2',
+            'table_name' => 'photo_editing',
+        ]);
+        $this->createTaskType([
+            'name' => 'VideoEditing',
+            'company_id' => '2',
+            'table_name' => 'video_editing',
+        ]);
         TaskType::factory(10)->create();
     }
     private function createUser(array $data): void

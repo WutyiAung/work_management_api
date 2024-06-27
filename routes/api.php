@@ -73,7 +73,7 @@ Route::delete('employees-delete/{id}',[EmployeeApiController::class, 'employeeDe
 
 //Project
 Route::post('project-create',[ProjectApiController::class,'projectCreate']);
-Route::get('projects',[ProjectApiController::class,'project']);
+Route::get('projects',[ProjectApiController::class,'index']);
 Route::get('projects/{id}',[ProjectApiController::class,'projectDetail']);
 Route::delete('projects-delete/{id}',[ProjectApiController::class,'projectDelete']);
 Route::post('projects-update/{id}',[ProjectApiController::class,'projectUpdate']);

@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Photo;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use App\Http\Requests\PhotoRequest;
 use Illuminate\Support\Facades\File;
 use App\Http\Requests\ProjectRequest;
 
@@ -28,8 +26,13 @@ class ProjectApiController extends Controller
         ]);
     }
     //all project Data
-    public function project(){
-        $projects = Project::with('customer','employee')->get();
+    public function index(Request $request){
+        $customerId = $request->query('customer_id');
+        $query = Project::with('customer','employee');
+        if($customerId && $customerId !== 'undefined' && $customerId !== 'null'){
+            $query->where('customer_id',$customerId);
+        }
+        $projects = $query->get();
         return response()->json([
             "status" => "success",
             "projects" => $projects

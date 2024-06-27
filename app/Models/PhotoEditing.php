@@ -5,12 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class VideoEditing extends Model
+class PhotoEditing extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    public function highLight()
-    {
-        return $this->belongsToMany(HighLight::class,'video_editing_high_lights');
-    }
 }

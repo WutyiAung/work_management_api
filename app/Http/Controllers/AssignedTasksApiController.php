@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\ShootingAccessoryCategory;
 use App\Http\Requests\AssignedTasksRequest;
+use App\Models\HighLight;
+use App\Models\PhotoEditing;
+use App\Models\VideoEditing;
 
 class AssignedTasksApiController extends Controller
 {
@@ -47,6 +50,12 @@ class AssignedTasksApiController extends Controller
             } elseif($request->filled('deployment_type')){
                 $deployment = $this->handleDeployment($request);
                 $assignedTasks->deployment()->attach($deployment->id);
+            } elseif($request->filled('brand_name')){
+                $photoEditing = $this->handlePhotoEditing($request);
+                $assignedTasks->photoEditing()->attach($photoEditing->id);
+            } elseif($request->filled('video_editor')){
+                $videoEditing = $this->handleVideoEditing($request);
+                $assignedTasks->videoEditing()->attach($videoEditing->id);
             }
 
             DB::commit();
@@ -173,6 +182,38 @@ class AssignedTasksApiController extends Controller
         $deployment = Deployment::create($deploymentData);
         return $deployment;
     }
+    private function handlePhotoEditing($request)
+    {
+        $photoEditingData = $request->only([
+            'brand_name','project_title','project_start_date','draft_deadline','final_deadline','account_executive','photo_retoucher','project_description','client_request_detail','number_of_retouch_photos','color_grade','editing_style','remark','editing_reference'
+        ]);
+        $photoEditing = PhotoEditing::create($photoEditingData);
+        return $photoEditing;
+    }
+    private function handleVideoEditing($request)
+    {
+        $videoEditingData = $request->only([
+            'brand_name','project_title','project_start_date','draft_deadline','final_deadline','account_executive','photo_retoucher','project_description','client_request_detail','number_of_retouch_photos','color_grade','editing_style','remark','editing_reference','video_editor','motion_text_effect','three_d_animation'
+        ]);
+        $videoEditing = VideoEditing::create($videoEditingData);
+        if ($request->filled('hight_light')) {
+            $hightLights = json_decode($request->input('hight_light'), true);
+            if (is_array($hightLights)) {
+                foreach ($hightLights as $hightLight) {
+                    $hightLight = HighLight::create([
+                        'time' => $hightLight['time'],
+                        'description' => $hightLight['description'],
+                        'remark' => $hightLight['remark'],
+                    ]);
+                    $videoEditing->highLight()->attach($hightLight->id);
+                }
+            } else {
+                throw new \Exception('The hightLight field must be an array.');
+            }
+        }
+        return $videoEditing;
+    }
+
     public function assignedTasksUpdate(AssignedTasksRequest $request, $id)
     {
         DB::beginTransaction();
