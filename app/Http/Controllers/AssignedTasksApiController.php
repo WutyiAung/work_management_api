@@ -575,6 +575,16 @@ class AssignedTasksApiController extends Controller
 
             if (isset($assignedTask->photoEditing[0])) {
                 $taskData['photoEditingData'] = $assignedTask->photoEditing[0];
+                $photoEditing = $assignedTask->photoEditing[0];
+                if (isset($photoEditing->photo_retoucher)) {
+                    $stringData = $photoEditing->photo_retoucher;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $photoEditing->photo_retoucher = $arrayData;
+                }
             } else {
                 $taskData['photoEditingData'] = null;
             }
@@ -734,6 +744,16 @@ class AssignedTasksApiController extends Controller
 
         if ($assignedTask && isset($assignedTask->photoEditing[0])) {
             $response['photoEditingData'] = $assignedTask->photoEditing[0];
+            $photoEditing = $assignedTask->photoEditing[0];
+            if (isset($photoEditing->photo_retoucher)) {
+                $stringData = $photoEditing->photo_retoucher;
+                $stringData = trim($stringData, "[]");
+                $arrayData = array_map('trim', explode(',', $stringData));
+                $arrayData = array_map(function($item) {
+                    return trim($item, "'");
+                }, $arrayData);
+                $photoEditing->photo_retoucher = $arrayData;
+            }
         } else {
             $response['photoEditingData'] = null;
         }
@@ -880,6 +900,16 @@ class AssignedTasksApiController extends Controller
 
             if (isset($assignedTask->photoEditing[0])) {
                 $taskData['photoEditingData'] = $assignedTask->photoEditing[0];
+                $photoEditing = $assignedTask->photoEditing[0];
+                if (isset($photoEditing->photo_retoucher)) {
+                    $stringData = $photoEditing->photo_retoucher;
+                    $stringData = trim($stringData, "[]");
+                    $arrayData = array_map('trim', explode(',', $stringData));
+                    $arrayData = array_map(function($item) {
+                        return trim($item, "'");
+                    }, $arrayData);
+                    $photoEditing->photo_retoucher = $arrayData;
+                }
             } else {
                 $taskData['photoEditingData'] = null;
             }
