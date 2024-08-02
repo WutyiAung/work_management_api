@@ -12,6 +12,7 @@ use App\Http\Controllers\PositionApiController;
 use App\Http\Controllers\DepartmentApiController;
 use App\Http\Controllers\AssignedTasksApiController;
 use App\Http\Controllers\DesignApiController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ShootingApiController;
 use App\Http\Controllers\TaskProjectTypeApiController;
 use App\Http\Controllers\TaskTypeApiController;
@@ -112,3 +113,9 @@ Route::get('shooting-accessory/{id}',[ShootingApiController::class,'getShootingA
 
 //Task Types
 Route::apiResource('/task-types',TaskTypeApiController::class);
+
+//Notifications Tag
+Route::get('notifications',[NotificationController::class,'index']);
+Route::post('notifications/{id}',[NotificationController::class,'store']);
+Route::post('notifications',[NotificationController::class,'isRead']);
+Route::post('is_close/{id}',[NotificationController::class,'isClose']);

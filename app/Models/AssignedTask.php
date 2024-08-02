@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Models\FrontEnd;
 use App\Models\Shooting;
 use App\Models\Deployment;
+use App\Models\ContentManagements;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -54,6 +55,10 @@ class AssignedTask extends Model
     }
     public function videoEditing(){
         return $this->belongsToMany(VideoEditing::class,'assigned_task_video_editings');
+    }
+    public function contentManagement()
+    {
+        return $this->belongsToMany(ContentManagements::class,'assigned_task_content_managements');
     }
     // Adding the deleting event to remove pivot table entries
     protected static function boot()

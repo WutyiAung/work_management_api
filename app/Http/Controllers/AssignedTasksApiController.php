@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\ShootingAccessoryCategory;
 use App\Http\Requests\AssignedTasksRequest;
+use App\Models\ContentManagement;
+use App\Models\ContentManagements;
 use App\Models\HighLight;
 use App\Models\PhotoEditing;
 use App\Models\VideoEditing;
@@ -56,6 +58,9 @@ class AssignedTasksApiController extends Controller
             } elseif($request->filled('brand_name') && $request->filled('video_editor')){
                 $videoEditing = $this->handleVideoEditing($request);
                 $assignedTasks->videoEditing()->attach($videoEditing->id);
+            } elseif($request->filled('content_title')){
+                $contentManagement = $this->handleContentManagement($request);
+                $assignedTasks->contentManagement()->attach($contentManagement);
             }
 
             DB::commit();
@@ -213,6 +218,14 @@ class AssignedTasksApiController extends Controller
         }
         return $videoEditing;
     }
+    private function handleContentManagement($request)
+    {
+        $data = $request->only([
+            'content_title','notify_date','notify_time','content_description','is_seen'
+        ]);
+        $contentManagement = ContentManagements::create($data);
+        return $contentManagement;
+    }
 
     public function assignedTasksUpdate(AssignedTasksRequest $request, $id)
     {
@@ -242,6 +255,8 @@ class AssignedTasksApiController extends Controller
                 $this->updatePhotoEditing($request, $assignedTask);
             } elseif($request->filled('brand_name') && $request->filled('video_editor')){
                 $this->updateVideoEditing($request, $assignedTask);
+            } elseif($request->filled('content_title')){
+                $this->updateContentManagement($request, $assignedTask);
             }
 
             DB::commit();
@@ -455,6 +470,18 @@ class AssignedTasksApiController extends Controller
             }
         }
     }
+    private function updateContentManagement($request, $assignedTask)
+    {
+        $contentManagement = $assignedTask->contentManagement()->first();
+        if(!$contentManagement) {
+            $contentManagement = new ContentManagements();
+            $assignedTask->contentManagement()->save($contentManagement);
+        }
+        $contentManagementData = $request->only([
+            'content_title','notify_date','notify_time','content_description','is_seen'
+        ]);
+        $contentManagement->update($contentManagementData);
+    }
     //GET
     public function assignedTasks()
     {
@@ -606,6 +633,14 @@ class AssignedTasksApiController extends Controller
             } else {
                 $taskData['videoEditingData'] = null;
             }
+
+            if (isset($assignedTask->contentManagement[0])) {
+                $taskData['contentManagementData'] = $assignedTask->contentManagement[0];
+                $taskData['contentManagementData']['is_seen'] = $assignedTask->contentManagement[0]->is_seen === 1;
+            } else {
+                $taskData['contentManagementData'] = null;
+            }
+
             // Convert is_reported field to boolean
             $taskData['is_reported'] = $assignedTask->is_reported === 1;
             $taskData['is_done'] = $assignedTask->is_done === 1;
@@ -776,6 +811,13 @@ class AssignedTasksApiController extends Controller
             $taskData['videoEditingData'] = null;
         }
 
+        if ($assignedTask && isset($assignedTask->contentManagement[0])) {
+            $response['contentManagementData'] = $assignedTask->contentManagement[0];
+            $response['contentManagementData']['is_seen'] = $assignedTask->contentManagement[0]->is_seen === 1;
+        } else {
+            $response['contentManagementData'] = null;
+        }
+
         $response['assignedTask']['is_reported'] = $assignedTask->is_reported === 1;
         $response['assignedTask']['is_done'] = $assignedTask->is_done === 1;
         return response()->json($response);
@@ -930,6 +972,13 @@ class AssignedTasksApiController extends Controller
                 }
             } else {
                 $taskData['videoEditingData'] = null;
+            }
+
+            if (isset($assignedTask->contentManagement[0])) {
+                $taskData['contentManagementData'] = $assignedTask->contentManagement[0];
+                $taskData['contentManagementData']['is_seen'] = $assignedTask->contentManagement[0]->is_seen === 1;
+            } else {
+                $taskData['contentManagementData'] = null;
             }
 
             // Convert is_reported field to boolean
