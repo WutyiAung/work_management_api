@@ -32,9 +32,7 @@ return new class extends Migration
             $table->string('in_time')->nullable();
             $table->string('crew_list')->nullable();
             $table->string('project_details')->nullable();
-            $table->longText('description')->nullable();
-            $table->string('food_charge')->nullable();
-            $table->string('other_charge')->nullable();
+
             $table->timestamps();
         });
     }

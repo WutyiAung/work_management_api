@@ -115,7 +115,7 @@ class AssignedTasksApiController extends Controller
             'shooting_location', 'type_detail', 'script_detail', 'scene_number', 'contact_name',
             'contact_phone', 'duration', 'type', 'client', 'date', 'time', 'video_shooting_project',
             'photo_shooting_project', 'arrive_office_on_time', 'transportation_charge', 'out_time',
-            'in_time', 'crew_list', 'project_details','description','food_charge','other_charge'
+            'in_time', 'crew_list', 'project_details','shooting_description','food_charge','other_charge','total_charge'
         ]);
 
         if ($request->hasFile('document')) {
@@ -323,7 +323,7 @@ class AssignedTasksApiController extends Controller
             'shooting_location', 'type_detail', 'script_detail', 'scene_number', 'contact_name',
             'contact_phone', 'duration', 'type', 'client', 'date', 'time', 'video_shooting_project',
             'photo_shooting_project', 'arrive_office_on_time', 'transportation_charge', 'out_time',
-            'in_time', 'crew_list', 'project_details','description','food_charge','other_charge'
+            'in_time', 'crew_list', 'project_details','shooting_description','food_charge','other_charge','total_charge'
         ]);
 
         if ($request->hasFile('document')) {
